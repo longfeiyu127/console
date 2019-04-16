@@ -1,0 +1,55 @@
+{
+  "a20190414": {
+    "themeColor": "#000",
+    "mobileColor": "#CBA038",
+    "bannerUrl": "https://www.cmrh.com/serviceBanner/a20190414/banner.png",
+    "activityKey": "09_ACT_2019_0001",
+    "name": "414客服节",
+    "date": [
+      {
+        "activityKey": "09_ACT_2019_0001",
+        "desc": "活动",
+        "item": "activityTime",
+        "endYTD": "2019-04-14",
+        "endHMS": "17:00:00",
+        "startYTD": "2019-04-14",
+        "startHMS": "14:00:00",
+        "endTime": "",
+        "startTime": ""
+      },
+      {
+        "activityKey": "09_ACT_2019_0001",
+        "desc": "签到",
+        "item": "registerTime",
+        "endYTD": "2019-04-14",
+        "endHMS": "17:00:00",
+        "startYTD": "2019-04-14",
+        "startHMS": "12:00:00",
+        "endTime": "",
+        "startTime": ""
+      },
+      {
+        "activityKey": "09_ACT_2019_0001",
+        "desc": "抽奖",
+        "item": "drawLotteryTime",
+        "endYTD": "2019-04-14",
+        "endHMS": "17:00:00",
+        "startYTD": "2019-04-14",
+        "startHMS": "14:00:00",
+        "endTime": "",
+        "startTime": ""
+      },
+      {
+        "activityKey": "09_ACT_2019_0001",
+        "desc": "直播",
+        "item": "liveBroadcastTime",
+        "endYTD": "2019-04-14",
+        "endHMS": "17:00:00",
+        "startYTD": "2019-04-14",
+        "startHMS": "14:00:00",
+        "endTime": "",
+        "startTime": ""
+      }
+    ]
+  }
+}
