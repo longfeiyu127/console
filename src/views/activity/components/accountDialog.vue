@@ -21,7 +21,7 @@
       </el-form>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="confirm">确 定</el-button>
+      <el-button type="primary" @click="confirm">修改时间</el-button>
     </span>
   </el-dialog>
 </template>
@@ -34,21 +34,17 @@ const ActivityConfig = require('@/static/activityConfig.json')
 const ActivityConfigKeys = Object.keys(ActivityConfig)
 const selectData = ActivityConfigKeys.map(item => {
   return {
+    item,
     name: ActivityConfig[item].name,
     activityKey: ActivityConfig[item].activityKey
   }
 })
 
 @Component({
-  // Set 'name' here to prevent uglifyjs from causing recursive component not work
-  // See https://medium.com/haiiro-io/element-component-name-with-vue-class-component-f3b435656561 for detail
   name: 'AccountDialog'
 })
 export default class AccountDialog extends Vue {
   @Prop({ required: true }) private visible!: boolean
-  @Prop({ default: false }) private isNest!: boolean
-  @Prop({ default: false }) private collapse!: boolean
-  @Prop({ default: '' }) private basePath!: string
 
   private selectData = selectData
   private dialogVisible = false
@@ -62,7 +58,7 @@ export default class AccountDialog extends Vue {
   private confirm() {
     console.log(this.account)
     ActivityModule.setAccount(this.account)
-    // ActivityModule.setActivityName(this.account)
+    ActivityModule.setActivityName(selectData.filter(item => item.activityKey === this.account.activityKey)[0].item || '')
     this.dialogVisible = false
   }
 

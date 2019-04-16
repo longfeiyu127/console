@@ -2,8 +2,8 @@
   <div class="app-container">
     <!-- 活动时间 -->
     <el-form ref="form" :model="form" label-width="80px">
-      <el-form-item label="抽奖时间">
-        <el-date-picker v-model="value4" type="datetimerange"
+      <el-form-item v-for="item in activityConfig.date" :label="item.desc" :key="item.item">
+        <el-date-picker v-model="item.time" type="datetimerange"
           range-separator="至" start-placeholder="开始时间"
           end-placeholder="结束时间">
         </el-date-picker>
@@ -72,8 +72,7 @@ import AccountDialog from './components/accountDialog.vue'
 import { ActivityModule } from '@/store/modules/activity'
 
 const ActivityConfig = require('@/static/activityConfig.json')
-
-console.log(ActivityConfig)
+const activityName = ActivityModule.activityName || 'a20190414'
 
 @Component({
   components: {
@@ -81,7 +80,7 @@ console.log(ActivityConfig)
   }
 })
 export default class Tree extends Vue {
-  private activityConfig = ActivityConfig
+  private activityConfig = ActivityConfig[activityName]
   private centerDialogVisible = false
   private filterText = ''
   private data2 = []
@@ -123,6 +122,7 @@ export default class Tree extends Vue {
     console.log('提交')
     const a = ActivityConfig
     console.log(a)
+    console.log(this.activityConfig)
     // console.log(ActivityConfig)
   }
 }
