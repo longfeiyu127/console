@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/views/layout/Layout.vue'
 import Activity from './modules/activity'
+import Site from './modules/site'
 
 Vue.use(Router)
 
@@ -27,6 +28,7 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     ...Activity,
+    ...Site,
     {
       path: '/login',
       component: () =>
