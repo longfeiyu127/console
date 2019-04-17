@@ -10,49 +10,39 @@
         "activityKey": "09_ACT_2019_0001",
         "desc": "活动时间",
         "item": "activityTime",
-        "endYTD": "2019-04-14",
-        "endHMS": "17:00:00",
-        "startYTD": "2019-04-14",
-        "startHMS": "14:00:00",
-        "time": "",
-        "endTime": "",
-        "startTime": ""
+        "endTime": "2019-04-14 17:00:00",
+        "startTime": "2019-04-14 14:00:00",
+        "time": ""
       },
       {
         "activityKey": "09_ACT_2019_0001",
         "desc": "签到时间",
         "item": "registerTime",
-        "endYTD": "2019-04-14",
-        "endHMS": "17:00:00",
-        "startYTD": "2019-04-14",
-        "startHMS": "12:00:00",
         "time": "",
-        "endTime": "",
-        "startTime": ""
+        "endTime": "2019-04-14 17:00:00",
+        "startTime": "2019-04-14 12:00:00"
       },
       {
         "activityKey": "09_ACT_2019_0001",
         "desc": "抽奖时间",
         "item": "drawLotteryTime",
-        "endYTD": "2019-04-14",
-        "endHMS": "17:00:00",
-        "startYTD": "2019-04-14",
-        "startHMS": "14:00:00",
         "time": "",
-        "endTime": "",
-        "startTime": ""
+        "endTime": "2019-04-14 17:00:00",
+        "startTime": "2019-04-14 14:00:00"
       },
       {
         "activityKey": "09_ACT_2019_0001",
         "desc": "直播时间",
         "item": "liveBroadcastTime",
-        "endYTD": "2019-04-14",
-        "endHMS": "17:00:00",
-        "startYTD": "2019-04-14",
-        "startHMS": "14:00:00",
         "time": "",
-        "endTime": "",
-        "startTime": ""
+        "endTime": "2019-04-14 17:00:00",
+        "startTime": "2019-04-14 14:00:00"
+      }
+    ],
+    "awards": [
+      {
+        "key": "1",
+        "name": "云杉体检"
       }
     ]
   }

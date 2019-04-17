@@ -10,28 +10,29 @@ import Layout from '@/views/layout/Layout.vue'
   }
 */
 
-export default {
-  path: '/activity',
-  component: Layout,
-  redirect: '/activity/console',
-  name: 'Activity',
-  meta: { title: '活动', icon: 'example' },
-  children: [
-    {
-      path: 'console',
-      name: 'Console',
-      component: () =>
-        import(
-          /* webpackChunkName: "console" */ '@/views/activity/console.vue'
-        ),
-      meta: { title: '抽奖后台', icon: 'example' }
-    },
-    {
-      path: 'tree',
-      name: 'screen',
-      component: () =>
-        import(/* webpackChunkName: "tree" */ '@/views/tree/index.vue'),
-      meta: { title: '抽奖后台', icon: 'tree', hidden: true }
-    }
-  ]
-}
+export default [
+  {
+    path: '/activity',
+    component: Layout,
+    redirect: '/activity/console',
+    name: 'Activity',
+    meta: { title: '活动', icon: 'example' },
+    children: [
+      {
+        path: 'console',
+        name: 'Console',
+        component: () =>
+          import(
+            /* webpackChunkName: "console" */ '@/views/activity/console.vue'
+          ),
+        meta: { title: '抽奖后台', icon: 'example' }
+      }
+    ]
+  },
+  {
+    path: '/activity/screen',
+    component: () => import(/* webpackChunkName: "ActivityScreen" */ '@/views/activity/screen.vue'),
+    name: 'ActivityScreen',
+    meta: { title: '抽奖后台', hidden: true }
+  }
+]
