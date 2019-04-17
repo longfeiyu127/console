@@ -9,6 +9,7 @@ Vue.use(Router)
 /*
   redirect:                      if `redirect: noredirect`, it won't redirect if click on the breadcrumb
   meta: {
+    roles: ['admin','editor']    control the page roles (you can set multiple roles)
     title: 'title'               the name showed in subMenu and breadcrumb (recommend set)
     icon: 'svg-name'             the icon showed in the sidebar
     breadcrumb: false            if false, the item will be hidden in breadcrumb (default is true)
@@ -16,8 +17,179 @@ Vue.use(Router)
   }
 */
 
-export default new Router({
-  // mode: 'history',  // Disabled due to Github Pages doesn't support this, enable this if you need.
+/**
+ * constantRoutes
+ * a base page that does not have permission requirements
+ * all roles can be accessed
+ */
+export const constantRoutes = [
+  {
+    path: '/login',
+    component: () =>
+      import(/* webpackChunkName: "login" */ '@/views/login/index.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '/404',
+    component: () => import(/* webpackChunkName: "404" */ '@/views/404.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    name: 'Dashboard',
+    meta: { hidden: true },
+    children: [
+      {
+        path: 'dashboard',
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'
+          )
+      }
+    ]
+  },
+  {
+    path: '/example',
+    component: Layout,
+    redirect: '/example/table',
+    name: 'Example',
+    meta: { title: 'Example', icon: 'example' },
+    children: [
+      {
+        path: 'table',
+        name: 'Table',
+        component: () =>
+          import(/* webpackChunkName: "table" */ '@/views/table/index.vue'),
+        meta: { title: 'Table', icon: 'table' }
+      },
+      {
+        path: 'tree',
+        name: 'Tree',
+        component: () =>
+          import(/* webpackChunkName: "tree" */ '@/views/tree/index.vue'),
+        meta: { title: 'Tree', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/form',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () =>
+          import(/* webpackChunkName: "form" */ '@/views/form/index.vue'),
+        meta: { title: 'Form', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/nested',
+    component: Layout,
+    redirect: '/nested/menu1',
+    name: 'Nested',
+    meta: { title: 'Nested', icon: 'nested' },
+    children: [
+      {
+        path: 'menu1',
+        component: () =>
+          import(
+            /* webpackChunkName: "menu1" */ '@/views/nested/menu1/index.vue'
+          ),
+        name: 'Menu1',
+        meta: { title: 'Menu1' },
+        children: [
+          {
+            path: 'menu1-1',
+            component: () =>
+              import(
+                /* webpackChunkName: "menu1-1" */ '@/views/nested/menu1/menu1-1/index.vue'
+              ),
+            name: 'Menu1-1',
+            meta: { title: 'Menu1-1' }
+          },
+          {
+            path: 'menu1-2',
+            component: () =>
+              import(
+                /* webpackChunkName: "menu1-2" */ '@/views/nested/menu1/menu1-2/index.vue'
+              ),
+            name: 'Menu1-2',
+            meta: { title: 'Menu1-2' },
+            children: [
+              {
+                path: 'menu1-2-1',
+                component: () =>
+                  import(
+                    /* webpackChunkName: "menu1-2-1" */ '@/views/nested/menu1/menu1-2/menu1-2-1/index.vue'
+                  ),
+                name: 'Menu1-2-1',
+                meta: { title: 'Menu1-2-1' }
+              },
+              {
+                path: 'menu1-2-2',
+                component: () =>
+                  import(
+                    /* webpackChunkName: "menu1-2-2" */ '@/views/nested/menu1/menu1-2/menu1-2-2/index.vue'
+                  ),
+                name: 'Menu1-2-2',
+                meta: { title: 'Menu1-2-2' }
+              }
+            ]
+          },
+          {
+            path: 'menu1-3',
+            component: () =>
+              import(
+                /* webpackChunkName: "menu1-3" */ '@/views/nested/menu1/menu1-3/index.vue'
+              ),
+            name: 'Menu1-3',
+            meta: { title: 'Menu1-3' }
+          }
+        ]
+      },
+      {
+        path: 'menu2',
+        component: () =>
+          import(
+            /* webpackChunkName: "menu2" */ '@/views/nested/menu2/index.vue'
+          ),
+        name: 'Menu2',
+        meta: { title: 'Menu2' }
+      }
+    ]
+  },
+  {
+    path: 'external-link',
+    component: Layout,
+    children: [
+      {
+        path: 'https://github.com/Armour/vue-typescript-admin-template',
+        meta: { title: 'External Link', icon: 'link' }
+      }
+    ]
+  },
+  {
+    path: '*',
+    redirect: '/404',
+    meta: { hidden: true }
+  }
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+  ...Activity,
+  ...Site
+]
+
+const createRouter = () => new Router({
+  // mode: 'history', // require service support
   scrollBehavior: (to, from, savedPosition) => {
     if (savedPosition) {
       return savedPosition
@@ -26,162 +198,9 @@ export default new Router({
     }
   },
   base: process.env.BASE_URL,
-  routes: [
-    ...Activity,
-    ...Site,
-    {
-      path: '/login',
-      component: () =>
-        import(/* webpackChunkName: "login" */ '@/views/login/index.vue'),
-      meta: { hidden: true }
-    },
-    {
-      path: '/404',
-      component: () => import(/* webpackChunkName: "404" */ '@/views/404.vue'),
-      meta: { hidden: true }
-    },
-    {
-      path: '/',
-      component: Layout,
-      redirect: '/dashboard',
-      name: 'Dashboard',
-      meta: { hidden: true },
-      children: [
-        {
-          path: 'dashboard',
-          component: () =>
-            import(
-              /* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'
-            )
-        }
-      ]
-    },
-    {
-      path: '/example',
-      component: Layout,
-      redirect: '/example/table',
-      name: 'Example',
-      meta: { title: 'Example', icon: 'example' },
-      children: [
-        {
-          path: 'table',
-          name: 'Table',
-          component: () =>
-            import(/* webpackChunkName: "table" */ '@/views/table/index.vue'),
-          meta: { title: 'Table', icon: 'table' }
-        },
-        {
-          path: 'tree',
-          name: 'Tree',
-          component: () =>
-            import(/* webpackChunkName: "tree" */ '@/views/tree/index.vue'),
-          meta: { title: 'Tree', icon: 'tree' }
-        }
-      ]
-    },
-    {
-      path: '/form',
-      component: Layout,
-      children: [
-        {
-          path: 'index',
-          name: 'Form',
-          component: () =>
-            import(/* webpackChunkName: "form" */ '@/views/form/index.vue'),
-          meta: { title: 'Form', icon: 'form' }
-        }
-      ]
-    },
-    {
-      path: '/nested',
-      component: Layout,
-      redirect: '/nested/menu1',
-      name: 'Nested',
-      meta: { title: 'Nested', icon: 'nested' },
-      children: [
-        {
-          path: 'menu1',
-          component: () =>
-            import(
-              /* webpackChunkName: "menu1" */ '@/views/nested/menu1/index.vue'
-            ),
-          name: 'Menu1',
-          meta: { title: 'Menu1' },
-          children: [
-            {
-              path: 'menu1-1',
-              component: () =>
-                import(
-                  /* webpackChunkName: "menu1-1" */ '@/views/nested/menu1/menu1-1/index.vue'
-                ),
-              name: 'Menu1-1',
-              meta: { title: 'Menu1-1' }
-            },
-            {
-              path: 'menu1-2',
-              component: () =>
-                import(
-                  /* webpackChunkName: "menu1-2" */ '@/views/nested/menu1/menu1-2/index.vue'
-                ),
-              name: 'Menu1-2',
-              meta: { title: 'Menu1-2' },
-              children: [
-                {
-                  path: 'menu1-2-1',
-                  component: () =>
-                    import(
-                      /* webpackChunkName: "menu1-2-1" */ '@/views/nested/menu1/menu1-2/menu1-2-1/index.vue'
-                    ),
-                  name: 'Menu1-2-1',
-                  meta: { title: 'Menu1-2-1' }
-                },
-                {
-                  path: 'menu1-2-2',
-                  component: () =>
-                    import(
-                      /* webpackChunkName: "menu1-2-2" */ '@/views/nested/menu1/menu1-2/menu1-2-2/index.vue'
-                    ),
-                  name: 'Menu1-2-2',
-                  meta: { title: 'Menu1-2-2' }
-                }
-              ]
-            },
-            {
-              path: 'menu1-3',
-              component: () =>
-                import(
-                  /* webpackChunkName: "menu1-3" */ '@/views/nested/menu1/menu1-3/index.vue'
-                ),
-              name: 'Menu1-3',
-              meta: { title: 'Menu1-3' }
-            }
-          ]
-        },
-        {
-          path: 'menu2',
-          component: () =>
-            import(
-              /* webpackChunkName: "menu2" */ '@/views/nested/menu2/index.vue'
-            ),
-          name: 'Menu2',
-          meta: { title: 'Menu2' }
-        }
-      ]
-    },
-    {
-      path: 'external-link',
-      component: Layout,
-      children: [
-        {
-          path: 'https://github.com/Armour/vue-typescript-admin-template',
-          meta: { title: 'External Link', icon: 'link' }
-        }
-      ]
-    },
-    {
-      path: '*',
-      redirect: '/404',
-      meta: { hidden: true }
-    }
-  ]
+  routes: constantRoutes
 })
+
+const router = createRouter()
+
+export default router
