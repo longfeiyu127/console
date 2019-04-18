@@ -32,20 +32,18 @@ router.beforeEach(async(to: Route, from: Route, next: any) => {
         //     next({ path: '/' })
         //   })
         // })
-        alert('211212')
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const res = await UserModule.GetUserInfo()
-          console.log(res)
-          const { roles } = await UserModule.GetUserInfo()
-          console.log(roles)
+          await UserModule.GetUserInfo()
+          const roles = UserModule.roles
+          // console.log(roles)
           // generate accessible routes map based on roles
           const accessRoutes: any = await PermissionModule.generateRoutes(roles)
-
+          console.log(accessRoutes)
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
-
+          console.log(router)
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
