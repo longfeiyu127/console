@@ -44,7 +44,8 @@ class App extends VuexModule implements IPermissionState {
   public addRoutes = []
 
   @Action({ commit: 'SET_ROUTES' })
-  public generateRoutes({ commit }: any, roles: any) {
+  public generateRoutes(roles: any) {
+    console.log("roles", roles)
     return new Promise(resolve => {
       let accessedRoutes
       if (roles.includes('admin')) {
@@ -52,7 +53,7 @@ class App extends VuexModule implements IPermissionState {
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       }
-      commit('SET_ROUTES', accessedRoutes)
+      // commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
   }
@@ -64,4 +65,4 @@ class App extends VuexModule implements IPermissionState {
   }
 }
 
-export const AppModule = getModule(App)
+export const PermissionModule = getModule(App)
