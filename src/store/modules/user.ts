@@ -38,14 +38,23 @@ class User extends VuexModule implements IUserState {
     return ''
   }
 
-  @Action({ commit: 'SET_TOKEN' })
-  public async ResetToken({ commit }: any) {
-    return new Promise(resolve => {
-      commit('SET_TOKEN', '')
-      commit('SET_ROLES', [])
-      removeToken()
-      resolve()
-    })
+  // @Action({ commit: 'SET_TOKEN' })
+  // public async ResetToken({ commit }: any) {
+  //   return new Promise(resolve => {
+  //     commit('SET_TOKEN', '')
+  //     commit('SET_ROLES', [])
+  //     removeToken()
+  //     resolve()
+  //   })
+  // }
+
+  @MutationAction({ mutate: ['roles', 'token'] })
+  public async ResetToken() {
+    removeToken()
+    return {
+      roles: [],
+      token: ''
+    }
   }
 
   @MutationAction({ mutate: ['roles', 'name', 'avatar'] })
@@ -56,6 +65,7 @@ class User extends VuexModule implements IUserState {
     }
     const { data } = await getUserInfo(token)
     if (data.roles && data.roles.length > 0) {
+      console.log(data)
       return {
         roles: data.roles,
         name: data.name,

@@ -32,7 +32,6 @@ export const filterAsyncRoutes = (routes: any, roles: any) => {
   return res
 }
 
-
 export interface IPermissionState {
   routes: Array<any>,
   addRoutes: Array<any>
@@ -40,12 +39,13 @@ export interface IPermissionState {
 
 @Module({ dynamic: true, store, name: 'permission' })
 class App extends VuexModule implements IPermissionState {
-  public routes = []
+  public routes: any = []
   public addRoutes = []
 
   @Action({ commit: 'SET_ROUTES' })
   public generateRoutes(roles: any) {
-    console.log("roles", roles)
+    // console.log("roles", roles)
+    console.log(roles)
     return new Promise(resolve => {
       let accessedRoutes
       if (roles.includes('admin')) {
@@ -59,9 +59,9 @@ class App extends VuexModule implements IPermissionState {
   }
 
   @Mutation
-  private SET_ROUTES(state: any, routes: any) {
-    state.addRoutes = routes
-    state.routes = constantRoutes.concat(routes)
+  private SET_ROUTES(routes: any) {
+    this.addRoutes = routes
+    this.routes = constantRoutes.concat(routes)
   }
 }
 

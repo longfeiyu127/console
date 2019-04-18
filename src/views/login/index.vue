@@ -9,7 +9,7 @@
       label-position="left"
     >
       <h3 class="title">
-        vue-typescript-admin-template
+        在线服务-管理系统
       </h3>
       <el-form-item prop="username">
         <span class="svg-container">
@@ -20,7 +20,7 @@
           name="username"
           type="text"
           auto-complete="on"
-          placeholder="username"
+          placeholder="域账号"
         />
       </el-form-item>
       <el-form-item prop="password">
@@ -32,7 +32,7 @@
           :type="pwdType"
           name="password"
           auto-complete="on"
-          placeholder="password"
+          placeholder="密码"
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
@@ -46,7 +46,7 @@
           style="width:100%;"
           @click.native.prevent="handleLogin"
         >
-          Sign in
+          登 录
         </el-button>
       </el-form-item>
       <div class="tips">

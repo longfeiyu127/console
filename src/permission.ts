@@ -11,7 +11,7 @@ NProgress.configure({ showSpinner: false })
 
 const whiteList = ['/login']
 
-router.beforeEach(async (to: Route, from: Route, next: any) => {
+router.beforeEach(async(to: Route, from: Route, next: any) => {
   NProgress.start()
   if (getToken()) {
     if (to.path === '/login') {
@@ -19,23 +19,27 @@ router.beforeEach(async (to: Route, from: Route, next: any) => {
       NProgress.done() // If current page is dashboard will not trigger afterEach hook, so manually handle it
     } else {
       const hasRoles = UserModule.roles && UserModule.roles.length > 0
+      console.log(hasRoles)
       if (hasRoles) {
         next()
       } else {
-        UserModule.GetUserInfo().then(() => {
-          next()
-        })
-        .catch(err => {
-          UserModule.FedLogOut().then(() => {
-            Message.error(err || 'Verification failed, please login again')
-            next({ path: '/' })
-          })
-        })
+        // UserModule.GetUserInfo().then(() => {
+        //   next()
+        // })
+        // .catch(err => {
+        //   UserModule.FedLogOut().then(() => {
+        //     Message.error(err || 'Verification failed, please login again')
+        //     next({ path: '/' })
+        //   })
+        // })
+        alert('211212')
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+          const res = await UserModule.GetUserInfo()
+          console.log(res)
           const { roles } = await UserModule.GetUserInfo()
-
+          console.log(roles)
           // generate accessible routes map based on roles
           const accessRoutes: any = await PermissionModule.generateRoutes(roles)
 
@@ -47,7 +51,7 @@ router.beforeEach(async (to: Route, from: Route, next: any) => {
           next({ ...to, replace: true })
         } catch (error) {
           // remove token and go to login page to re-login
-          await UserModule.ResetToken(UserModule)
+          await UserModule.ResetToken()
           Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
           NProgress.done()
