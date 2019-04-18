@@ -74,7 +74,7 @@ const ActivityConfig = require('@/static/activityConfig.json')
     FormTitle
   }
 })
-export default class Tree extends Vue {
+export default class Console extends Vue {
   get activityConfig():any {
     console.log(ActivityConfig[ActivityModule.activityName || 'a20190414'])
     return ActivityConfig[ActivityModule.activityName || 'a20190414']

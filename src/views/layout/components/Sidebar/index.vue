@@ -23,6 +23,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
+import { PermissionModule } from '@/store/modules/permission'
 import SidebarItem from './SidebarItem.vue'
 
 @Component({
@@ -38,7 +39,7 @@ export default class SideBar extends Vue {
   }
 
   get routes() {
-    return (this.$router as any).options.routes
+    return PermissionModule.routes
   }
 
   get isCollapse() {
