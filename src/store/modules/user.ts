@@ -9,6 +9,7 @@ import {
 import { login, logout, getUserInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import store from '@/store'
+import { resetRouter } from '@/routes'
 
 export interface IUserState {
   token: string
@@ -83,6 +84,7 @@ class User extends VuexModule implements IUserState {
     }
     await logout()
     removeToken()
+    resetRouter()
     return {
       token: '',
       roles: []

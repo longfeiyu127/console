@@ -30,11 +30,6 @@ export const constantRoutes = [
     meta: { hidden: true }
   },
   {
-    path: '/404',
-    component: () => import(/* webpackChunkName: "404" */ '@/views/404.vue'),
-    meta: { hidden: true }
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -171,11 +166,6 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
-  },
-  {
-    path: '*',
-    redirect: '/404',
-    meta: { hidden: true }
   }
 ]
 
@@ -185,7 +175,17 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   ...Activity,
-  ...Site
+  ...Site,
+  {
+    path: '/404',
+    component: () => import(/* webpackChunkName: "404" */ '@/views/404.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '*',
+    redirect: '/404',
+    meta: { hidden: true }
+  }
 ]
 
 const createRouter = () => new Router({
@@ -202,5 +202,11 @@ const createRouter = () => new Router({
 })
 
 const router = createRouter()
+
+export function resetRouter() {
+  const newRouter = createRouter()
+  // @ts-ignore
+  router.matcher = newRouter.matcher // reset router
+}
 
 export default router

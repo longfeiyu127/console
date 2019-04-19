@@ -12,6 +12,7 @@ NProgress.configure({ showSpinner: false })
 const whiteList = ['/login']
 
 router.beforeEach(async(to: Route, from: Route, next: any) => {
+  console.log(to.path, from.path)
   NProgress.start()
   if (getToken()) {
     if (to.path === '/login') {
@@ -44,6 +45,10 @@ router.beforeEach(async(to: Route, from: Route, next: any) => {
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
           console.log(router)
+          console.log(JSON.stringify(accessRoutes))
+          console.log(to.path)
+          console.log(to)
+          alert('1112121')
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
@@ -57,10 +62,11 @@ router.beforeEach(async(to: Route, from: Route, next: any) => {
       }
     }
   } else {
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (whiteList.includes(to.path)) {
       next()
     } else {
       next(`/login?redirect=${to.path}`) // Redirect to login page
+      NProgress.done()
     }
   }
 })

@@ -16,7 +16,7 @@ export default [
     component: Layout,
     redirect: '/activity/console',
     name: 'Activity',
-    meta: { title: '活动', icon: 'example' },
+    meta: { title: '活动', icon: 'example', roles: ['admin', 'editor'] },
     children: [
       {
         path: 'console',

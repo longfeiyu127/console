@@ -5,7 +5,6 @@ import ElementUI from 'element-ui'
 import SvgIcon from 'vue-svgicon'
 import '@/styles/index.scss'
 import '@/icons/components'
-import '@/permission'
 
 /**
  * This project originally used easy-mock to simulate data requests,
@@ -19,6 +18,7 @@ import '../mock' // simulation data requests
 import App from '@/App.vue'
 import store from '@/store'
 import router from '@/routes'
+import '@/routes/permission'
 import '@/registerServiceWorker'
 
 Vue.use(ElementUI)
