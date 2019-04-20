@@ -11,6 +11,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@types/qs": "^6.5.3",
     "axios": "^0.18.0",
     "core-js": "^2.6.5",
     "element-ui": "^2.6.3",

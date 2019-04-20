@@ -1,14 +1,21 @@
 import { Message, MessageBox } from 'element-ui'
+import { stringify } from 'qs'
 import { getToken } from '@/utils/auth'
 import { UserModule } from '@/store/modules/user'
 
+const methods = ['post', 'put', 'patch']
+
+const urlPlaceholder = /\$\{\w+\}/
+function format(str: string, obj: any) {
+  obj.keys().map((key: string) => str = str.replace(new RegExp(`\\$\\{${key}\\}`, "g"), obj[key]))
+  return str
+}
+
 export const request = [
-  (config: any) => {
-    let { url, data } = config
-    let urlArr = url.split('%')
-    if (urlArr.length > 1) {
-      let urlRes = urlArr.map((item: string, index: number) => index % 2 === 0 ? item : (item = data[item] || ''))
-      url = urlRes.join('')
+  (config: any): Object => {
+    let { url, data, method } = config
+    if (urlPlaceholder.test(url)) {
+      url = format(url, data)
     }
     let headers = {
       'X-Session-Mode': 'header',
@@ -20,10 +27,18 @@ export const request = [
     if (UserModule.token) {
       config.headers['X-Token'] = getToken()
     }
-    return config
+    const dataName = method && methods.includes(method.toLowerCase()) ? 'data' : 'params'
+    return {
+      url,
+      [dataName]: data,
+      paramsSerializer(params: object) {
+        return stringify(params)
+      },
+      headers
+    }
   },
   (error: any) => {
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 ]
 

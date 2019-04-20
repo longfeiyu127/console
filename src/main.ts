@@ -5,6 +5,7 @@ import ElementUI from 'element-ui'
 import SvgIcon from 'vue-svgicon'
 import '@/styles/index.scss'
 import '@/icons/components'
+import http from '@/api'
 
 /**
  * This project originally used easy-mock to simulate data requests,
