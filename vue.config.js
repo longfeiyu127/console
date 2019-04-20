@@ -5,7 +5,7 @@ module.exports = {
       : '/',
 
   pwa: {
-    name: 'vue-typescript-admin-template'
+    name: '在线服务控制台'
   },
 
   lintOnSave: process.env.NODE_ENV !== 'production'
