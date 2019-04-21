@@ -1,4 +1,6 @@
 <template>
+<div class="has-logo">
+  <logo :collapse="isCollapse" />
   <el-scrollbar wrap-class="scrollbar-wrapper">
     <el-menu
       :show-timeout="200"
@@ -18,6 +20,7 @@
       />
     </el-menu>
   </el-scrollbar>
+</div>
 </template>
 
 <script lang="ts">
@@ -25,10 +28,12 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
 import { PermissionModule } from '@/store/modules/permission'
 import SidebarItem from './SidebarItem.vue'
+import Logo from './Logo.vue'
 
 @Component({
   components: {
-    SidebarItem
+    SidebarItem,
+    Logo
   }
 })
 export default class SideBar extends Vue {
@@ -69,6 +74,12 @@ export default class SideBar extends Vue {
 
   &.is-horizontal {
     display: none;
+  }
+}
+
+.has-logo {
+  .el-scrollbar {
+    height: calc(100% - 50px);
   }
 }
 </style>

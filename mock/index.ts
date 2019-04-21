@@ -10,4 +10,6 @@ Mock.mock(/\/user\/logout/, 'post', userAPI.logout)
 // Table
 Mock.mock(/\/table\/list/, 'get', tableAPI.list)
 
+Mock.mock(/\/ols\/mobile/, 'post', tableAPI.list)
+
 export default Mock

@@ -3,7 +3,7 @@ import { request, response } from './interceptors'
 
 export const headers = {
   'Content-Type': 'application/json',
-  'X-Session-Mode': 'header',
+  'X-Session-Mode': 'header'
 }
 
 const service = axios.create({

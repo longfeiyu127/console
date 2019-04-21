@@ -7,13 +7,17 @@ const methods = ['post', 'put', 'patch']
 
 const urlPlaceholder = /\$\{\w+\}/
 function format(str: string, obj: any) {
-  obj.keys().map((key: string) => str = str.replace(new RegExp(`\\$\\{${key}\\}`, "g"), obj[key]))
+  console.log(obj)
+  Object.keys(obj).map((key: string) => {
+    str = str.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), obj[key])
+  })
   return str
 }
 
 export const request = [
   (config: any): Object => {
-    let { url, data, method } = config
+    let { url, data, method = 'GET' } = config
+    console.log(config)
     if (urlPlaceholder.test(url)) {
       url = format(url, data)
     }
@@ -34,10 +38,12 @@ export const request = [
       paramsSerializer(params: object) {
         return stringify(params)
       },
+      method,
       headers
     }
   },
   (error: any) => {
+    console.log(error)
     return Promise.reject(error)
   }
 ]
@@ -52,6 +58,8 @@ export const response = [
     // code == 60204: account or password is incorrect
     // You can change this part for your own usage.
     const res = response.data
+    console.log(response)
+    console.log(res)
     if (res.code !== 20000) {
       Message({
         message: res.message,
@@ -79,6 +87,7 @@ export const response = [
     }
   },
   (err: any) => {
+    console.log(err)
     if (err && err.response) {
       switch (err.response.status) {
         case 400:

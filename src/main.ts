@@ -22,6 +22,9 @@ import router from '@/routes'
 import '@/routes/permission'
 import '@/registerServiceWorker'
 
+// console.log(http)
+// console.log(http.user.checkUser({aa: '112asds'}))
+
 Vue.use(ElementUI)
 Vue.use(SvgIcon, {
   tagName: 'svg-icon',

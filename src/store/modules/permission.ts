@@ -45,7 +45,7 @@ class App extends VuexModule implements IPermissionState {
   @Action({ commit: 'SET_ROUTES' })
   public generateRoutes(roles: any) {
     // console.log("roles", roles)
-    console.log(roles)
+    // console.log(roles)
     return new Promise(resolve => {
       let accessedRoutes
       if (roles.includes('admin')) {

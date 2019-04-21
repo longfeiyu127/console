@@ -12,7 +12,6 @@ NProgress.configure({ showSpinner: false })
 const whiteList = ['/login']
 
 router.beforeEach(async(to: Route, from: Route, next: any) => {
-  console.log(to.path, from.path)
   NProgress.start()
   if (getToken()) {
     if (to.path === '/login') {
@@ -20,7 +19,7 @@ router.beforeEach(async(to: Route, from: Route, next: any) => {
       NProgress.done() // If current page is dashboard will not trigger afterEach hook, so manually handle it
     } else {
       const hasRoles = UserModule.roles && UserModule.roles.length > 0
-      console.log(hasRoles)
+      // console.log(hasRoles)
       if (hasRoles) {
         next()
       } else {
@@ -41,14 +40,13 @@ router.beforeEach(async(to: Route, from: Route, next: any) => {
           // console.log(roles)
           // generate accessible routes map based on roles
           const accessRoutes: any = await PermissionModule.generateRoutes(roles)
-          console.log(accessRoutes)
+          // console.log(accessRoutes)
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
-          console.log(router)
-          console.log(JSON.stringify(accessRoutes))
-          console.log(to.path)
-          console.log(to)
-          alert('1112121')
+          // console.log(router)
+          // console.log(JSON.stringify(accessRoutes))
+          // console.log(to.path)
+          // console.log(to)
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })

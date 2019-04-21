@@ -66,7 +66,7 @@ class User extends VuexModule implements IUserState {
     }
     const { data } = await getUserInfo(token)
     if (data.roles && data.roles.length > 0) {
-      console.log(data)
+      // console.log(data)
       return {
         roles: data.roles,
         name: data.name,
