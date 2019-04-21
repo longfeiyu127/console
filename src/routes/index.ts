@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Layout from '@/views/layout/Layout.vue'
 import Activity from './modules/activity'
 import Site from './modules/site'
+import Permission from './modules/permission'
 
 Vue.use(Router)
 
@@ -174,6 +175,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  ...Permission,
   ...Activity,
   ...Site,
   {
