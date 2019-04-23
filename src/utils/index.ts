@@ -1,14 +1,14 @@
 /**
  * Created by jiachenpan on 16/11/18.
  */
-
+/* eslint-disable */
 /**
  * Parse the time to string
  * @param {(Date|string|number)} time
  * @param {string} cFormat
  * @returns {string}
  */
-export function parseTime(time: Date|string|number, cFormat: string): string|null {
+export function parseTime(time: Date|string|number, cFormat?: string): string|null {
   if (arguments.length === 0) {
     return null
   }
@@ -34,16 +34,16 @@ export function parseTime(time: Date|string|number, cFormat: string): string|nul
     s: date.getSeconds(),
     a: date.getDay()
   }
-  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
+  const timeStr = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
     return value || 0
   })
-  return time_str
+  return timeStr
 }
 
 /**
@@ -287,7 +287,7 @@ export function debounce(func: Function, wait: number, immediate: boolean): Func
  * @param {Object} source
  * @returns {Object}
  */
-export function deepClone (source: any): Object {
+export function deepClone(source: any): Object {
   if (!source && typeof source !== 'object') {
     throw new Error('error arguments: deepClone')
   }
@@ -365,13 +365,13 @@ export function removeClass(ele: HTMLElement, cls: string): void {
 export function forEach(obj: Object|Array<any>, fn: Function) {
   // Don't bother if no value provided
   if (obj === null || typeof obj === 'undefined') {
-    return;
+    return
   }
 
   // Force an array if not already something iterable
   if (typeof obj !== 'object') {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
+    /* eslint no-param-reassign:0 */
+    obj = [obj]
   }
 
   if (toString.call(obj) === '[object Array]') {
@@ -379,14 +379,14 @@ export function forEach(obj: Object|Array<any>, fn: Function) {
     // @ts-ignore
     for (let i = 0, l = obj.length; i < l; i++) {
       // @ts-ignore
-      fn.call(null, obj[i], i, obj);
+      fn.call(null, obj[i], i, obj)
     }
   } else {
     // Iterate over object keys
     for (let key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         // @ts-ignore
-        fn.call(null, obj[key], key, obj);
+        fn.call(null, obj[key], key, obj)
       }
     }
   }

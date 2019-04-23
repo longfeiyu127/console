@@ -44,7 +44,7 @@
     <form-title>下载专区</form-title>
     <el-form ref="form2" label-width="80px">
       <el-form-item>
-        <el-button type="primary" @click="uploadVisible = true">下载签到表</el-button>
+        <el-button type="primary" @click="downLoadSignList">下载签到表</el-button>
         <el-button type="primary" @click="uploadVisible = true">下载大屏幕中奖清单</el-button>
         <el-button type="primary" @click="uploadVisible = true">下载APP中奖清单</el-button>
       </el-form-item>
@@ -62,6 +62,7 @@ import FormTitle from '@/components/FormTitle/index.vue'
 import AccountDialog from './components/accountDialog.vue'
 import UploadWinning from './components/uploadWinning.vue'
 import Screen from '@/views/activity/screen.vue'
+import { parseTime } from '@/utils'
 import { ActivityModule } from '@/store/modules/activity'
 
 const ActivityConfig = require('@/static/activityConfig.json')
@@ -108,6 +109,49 @@ export default class Console extends Vue {
       console.log(ActivityModule)
       this.centerDialogVisible = true
     }
+  }
+
+  private downLoadSignList() {
+    const list = [
+      {
+        '姓名': '张三',
+        '年龄': '18'
+      },
+      {
+        '姓名': '张三',
+        '年龄': '18'
+      },
+      {
+        '姓名': '张三',
+        '年龄': '18'
+      }
+    ]
+    console.log(list)
+    const tHeader = ['姓名', '年龄']
+    const filterVal = ['姓名', '年龄']
+    const data = this.formatJson(filterVal, list)
+    console.log(data)
+    // @ts-ignore
+    import('@/vendor/Export2Excel.js').then(excel => {
+      console.log(excel)
+      excel.export_json_to_excel({
+        header: tHeader, // 表头 必填
+        data, // 具体数据 必填
+        filename: '签到表', // 非必填
+        autoWidth: true, // 非必填
+        bookType: 'xlsx' // 非必填
+      })
+    })
+  }
+
+  private formatJson(filterVal: any[], jsonData: any[]) {
+    return jsonData.map((v: any) => filterVal.map(j => {
+      if (j === 'timestamp') {
+        return parseTime(v[j])
+      } else {
+        return v[j]
+      }
+    }))
   }
 
   private filterNode(value: string, data: TreeData) {

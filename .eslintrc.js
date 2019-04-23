@@ -21,6 +21,8 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'space-before-function-paren': [2, 'never'],
     'no-template-curly-in-string': 'off',
+    'no-useless-call': 'off',
+    'standard/computed-property-even-spacing': 'off',
     'vue/array-bracket-spacing': 'error',
     'vue/arrow-spacing': 'error',
     'vue/block-spacing': 'error',
