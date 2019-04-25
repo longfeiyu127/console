@@ -2,17 +2,7 @@
   <div class="app-container">
     <form-title>设置活动时间</form-title>
     <!-- 活动时间 -->
-    <el-form ref="form" label-width="80px">
-      <el-form-item v-for="item in date" :label="item.desc" :key="item.item">
-        <el-date-picker v-model="item.time" type="datetimerange"
-          range-separator="至" start-placeholder="开始时间"
-          end-placeholder="结束时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">设置</el-button>
-      </el-form-item>
-    </el-form>
+    <activity-time />
     <!-- 活动控制 -->
     <form-title>抽奖</form-title>
     <div class="flex-box">
@@ -28,12 +18,13 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="lottery">抽奖</el-button>
+            <el-button type="primary" @click="stopLottery">停止抽奖</el-button>
           </el-form-item>
           <el-form-item>
-            <p>剩余抽奖次数 5 次</p>
+            <p>剩余抽奖次数 {{ remainTime }} 次</p>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">重置抽奖次数</el-button>
+            <el-button type="primary" @click="setRemainTime">重置抽奖次数</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -45,8 +36,8 @@
     <el-form ref="form2" label-width="80px">
       <el-form-item>
         <el-button type="primary" @click="downLoadSignList">下载签到表</el-button>
-        <el-button type="primary" @click="uploadVisible = true">下载大屏幕中奖清单</el-button>
-        <el-button type="primary" @click="uploadVisible = true">下载APP中奖清单</el-button>
+        <el-button type="primary" @click="downLoadgWonPrizes">下载大屏幕中奖清单</el-button>
+        <el-button type="primary" @click="downLoadgAppWonPrizes">下载APP中奖清单</el-button>
       </el-form-item>
     </el-form>
     <account-dialog :visible.sync="centerDialogVisible" />
@@ -56,19 +47,40 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { DatePicker, Form, FormItem, Input, RadioGroup, Radio, CheckboxGroup, Checkbox, Switch, Col, Select, Option } from 'element-ui'
+import { Form, FormItem, Input, RadioGroup, Radio, CheckboxGroup, Checkbox, Switch, Col, Select, Option, Message } from 'element-ui'
 import { TreeData } from 'element-ui/types/tree'
 import FormTitle from '@/components/FormTitle/index.vue'
 import AccountDialog from './components/accountDialog.vue'
+import ActivityTime from './components/activityTime.vue'
 import UploadWinning from './components/uploadWinning.vue'
 import Screen from '@/views/activity/screen.vue'
 import { parseTime } from '@/utils'
 import { ActivityModule } from '@/store/modules/activity'
+import $http from '@/api'
 
 const ActivityConfig = require('@/static/activityConfig.json')
 
+interface excelOption {
+  multiHeader?: any[] | undefined,
+  header: any,
+  data: any,
+  filename: any,
+  merges?: any[] | undefined,
+  autoWidth?: boolean | undefined,
+  bookType?: string | undefined
+}
+
+export enum ActivityStatus {
+  NotStarted,
+  Started,
+  Finish
+}
+
+let Export2Excel: any = null
+
 @Component({
   components: {
+    ActivityTime,
     AccountDialog,
     UploadWinning,
     Screen,
@@ -77,71 +89,129 @@ const ActivityConfig = require('@/static/activityConfig.json')
 })
 export default class Console extends Vue {
   get activityConfig():any {
-    console.log(ActivityConfig[ActivityModule.activityName || 'a20190414'])
+    // console.log(ActivityConfig[ActivityModule.activityName || 'a20190414'])
     return ActivityConfig[ActivityModule.activityName || 'a20190414']
   }
-  get date():any {
-    console.log(ActivityConfig[ActivityModule.activityName || 'a20190414'])
-    const date = ActivityConfig[ActivityModule.activityName || 'a20190414'].date.map((item: any) => {
-      if (!item.time) {
-        item.time = [
-          new Date(item.startTime),
-          new Date(item.endTime)
-        ]
-      }
-      return item
-    })
-    console.log(date)
-    return date
-  }
-  private centerDialogVisible = false
+  private centerDialogVisible = ActivityModule.activityName !== ''
   private uploadVisible = false
   private prizeType = ''
+  private remainTime = '5'
+  private status: ActivityStatus = 0
 
-  @Watch('activityConfig.date', { deep: true })
-  private OnDate(val: any) {
-    console.log(val)
-  }
+  // @Watch('activityConfig.date', { deep: true })
+  // private OnDate(val: any) {
+  //   console.log(val)
+  // }
   private created() {
-    console.log(ActivityModule)
-    console.log(ActivityModule.activityName)
+    // console.log(ActivityModule)
+    console.log('ActivityModule.activityName', ActivityModule.activityName)
     if (ActivityModule.activityName === '') {
-      console.log(ActivityModule)
+      // console.log(ActivityModule)
       this.centerDialogVisible = true
     }
   }
 
-  private downLoadSignList() {
-    const list = [
-      {
-        '姓名': '张三',
-        '年龄': '18'
-      },
-      {
-        '姓名': '张三',
-        '年龄': '18'
-      },
-      {
-        '姓名': '张三',
-        '年龄': '18'
-      }
-    ]
+  get activityName() {
+    return ActivityModule.activityName
+  }
+
+  @Watch('activityName', { immediate: true })
+  private OnActivityName(val: string) {
+    // console.log('activityName变化了', val)
+    if (val) {
+      this.initData()
+    }
+  }
+
+  private initData() {
+    // 查询抽奖状态
+    this.getPrizeStatus()
+    // 查询剩余抽奖次数
+    this.getLotteryRemainTimes()
+  }
+  // 查询抽奖状态
+  private async getPrizeStatus() {
+    const res = await $http.activity.getPrizeStatus({ activityKey: ActivityModule.account.activityKey })
+    console.log(res)
+    if (res.resCode !== 0) return
+    this.status = +res.resData.status
+  }
+  // 查询剩余抽奖次数
+  private async getLotteryRemainTimes() {
+    const res = await $http.activity.getLotteryRemainTimes({ ...ActivityModule.account })
+    console.log(res)
+    if (res.resCode !== 0) return
+    this.remainTime = res.resData.remainTimes
+  }
+
+  private async downLoadSignList() {
+    const res = await $http.activity.exportSignInList({ activityKey: ActivityModule.account.activityKey })
+    console.log(res)
+    if (res.resCode !== 0) return
+    const { list } = res.resData
     console.log(list)
-    const tHeader = ['姓名', '年龄']
-    const filterVal = ['姓名', '年龄']
+    const tHeader = ['签到号码', '签到时间']
+    const filterVal = ['phone', 'createdDate']
     const data = this.formatJson(filterVal, list)
     console.log(data)
-    // @ts-ignore
-    import('@/vendor/Export2Excel.js').then(excel => {
-      console.log(excel)
-      excel.export_json_to_excel({
-        header: tHeader, // 表头 必填
-        data, // 具体数据 必填
-        filename: '签到表', // 非必填
-        autoWidth: true, // 非必填
-        bookType: 'xlsx' // 非必填
-      })
+    this.downloadExcel({
+      header: tHeader, // 表头 必填
+      data, // 具体数据 必填
+      filename: '签到表', // 非必填
+      autoWidth: true, // 非必填
+      bookType: 'xlsx' // 非必填
     })
+  }
+
+  private async downLoadgWonPrizes() {
+    const res = await $http.activity.getWonPrizes({ ...ActivityModule.account })
+    console.log(res)
+    if (res.resCode !== 0) return
+    const { list } = res.resData
+    console.log(list)
+    const tHeader = ['奖项', '手机号', '中奖时间']
+    const filterVal = ['prizeType', 'phone', 'winTime']
+    const data = this.formatJson(filterVal, list)
+    console.log(data)
+    this.downloadExcel({
+      header: tHeader, // 表头 必填
+      data, // 具体数据 必填
+      filename: '大屏幕中奖清单', // 非必填
+      autoWidth: true, // 非必填
+      bookType: 'xlsx' // 非必填
+    })
+  }
+
+  private async downLoadgAppWonPrizes() {
+    const res = await $http.activity.getAppDrawWonPrizes({ ...ActivityModule.account })
+    console.log(res)
+    if (res.resCode !== 0) return
+    const { list } = res.resData
+    console.log(list)
+    const tHeader = ['奖项', '手机号', '中奖时间']
+    const filterVal = ['prizeType', 'phone', 'winTime']
+    const data = this.formatJson(filterVal, list)
+    console.log(data)
+    this.downloadExcel({
+      header: tHeader, // 表头 必填
+      data, // 具体数据 必填
+      filename: 'APP中奖清单', // 非必填
+      autoWidth: true, // 非必填
+      bookType: 'xlsx' // 非必填
+    })
+  }
+
+  private downloadExcel(opotions: excelOption) {
+    if (Export2Excel) {
+      Export2Excel.export_json_to_excel(opotions)
+    } else {
+      // @ts-ignore
+      import('@/vendor/Export2Excel.js').then(excel => {
+        // console.log(excel)
+        Export2Excel = excel
+        excel.export_json_to_excel(opotions)
+      })
+    }
   }
 
   private formatJson(filterVal: any[], jsonData: any[]) {
@@ -154,12 +224,6 @@ export default class Console extends Vue {
     }))
   }
 
-  private filterNode(value: string, data: TreeData) {
-    if (!value) {
-      return true
-    }
-    return data.label && data.label.indexOf(value) !== -1
-  }
   private onSubmit() {
     console.log('提交')
     const a = ActivityConfig
@@ -167,9 +231,66 @@ export default class Console extends Vue {
     console.log(this.activityConfig)
     // console.log(ActivityConfig)
   }
-  // 点击抽奖/停止
-  private lottery() {
-    console.log(this.prizeType)
+  // 点击抽奖
+  private async lottery() {
+    console.log(this.status)
+    if (this.status !== 1) {
+      if (this.prizeType) {
+        const res = await $http.activity.startLottery({ ...ActivityModule.account, prizeType: this.prizeType })
+        console.log(res)
+        if (res.resCode !== 0) return
+        Message({
+          message: '开始抽奖',
+          type: 'success',
+          duration: 5 * 1000
+        })
+      } else {
+        Message({
+          message: '请先选择抽奖类型',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+      console.log(this.prizeType)
+    } else {
+      Message({
+        message: '正在抽奖，请先停止抽奖',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+  }
+  // 停止抽奖
+  private async stopLottery() {
+    if (this.status === 1) {
+      const res = await $http.activity.stopLottery({ ...ActivityModule.account })
+      console.log(res)
+      if (res.resCode !== 0) return
+      this.remainTime = res.resData.remainTimes
+      Message({
+        message: '抽奖成功',
+        type: 'success',
+        duration: 5 * 1000
+      })
+    } else {
+      Message({
+        message: '抽奖未开始，请先开始抽奖',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+  }
+  // 重置抽奖次数
+  private async setRemainTime() {
+    const res = await $http.activity.setLotteryRemainTimes({ ...ActivityModule.account })
+    console.log(res)
+    if (res.resCode !== 0) return
+    this.remainTime = res.resData.remainTimes
+    Message({
+      message: '重置成功',
+      type: 'success',
+      duration: 5 * 1000
+    })
   }
 }
 </script>

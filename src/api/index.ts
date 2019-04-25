@@ -8,19 +8,18 @@ export interface ApiConfig {
 }
 
 function crearApi(config: ApiConfig) {
-  // console.log(config)
   return async(data: any) => request({ ...config, data })
 }
 
 const modules: any = {}
 const modulesConfig = {}
 let req = require.context('./config/', true, /^(.*\.(ts$))[^.]*$/im)
-console.log(req.keys())
+// console.log(req.keys())
 req.keys().map(key => {
-  console.log(key)
+  // console.log(key)
   const _moduleName = key.replace('./', '').replace('.ts', '')
   const obj = req(key).default
-  console.log(obj)
+  // console.log(obj)
   const API = new Proxy(obj, {
     get(target, property) {
       if (property in target) {

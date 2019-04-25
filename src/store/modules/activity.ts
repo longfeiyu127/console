@@ -1,6 +1,7 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import store from '@/store'
 
+const namespaced = 'activity'
 export interface Account {
   oprAccount: string,
   password: string,
@@ -12,9 +13,9 @@ export interface IActivityState {
   activityName: string
 }
 
-@Module({ dynamic: true, store, name: 'activity' })
+@Module({ dynamic: true, store, name: namespaced })
 class App extends VuexModule implements IActivityState {
-  public account = {
+  public account = sessionStorage.getItem('activity_ccount') ? JSON.parse(sessionStorage.getItem('activity_ccount') || '{}') : {
     oprAccount: '',
     password: '',
     activityKey: ''
@@ -23,6 +24,7 @@ class App extends VuexModule implements IActivityState {
 
   @Action({ commit: 'SET_ACCOUNT' })
   public setAccount(account: Account) {
+    sessionStorage.setItem('activity_ccount', JSON.stringify(account))
     return account
   }
 

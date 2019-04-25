@@ -66,7 +66,7 @@ const responseFake = (url: string, type = 'get', respond: any) => {
     type: type || 'get',
     response: respond
   }
-  console.log(res.url)
+  // console.log(res.url)
   Mock.mock(res.url, res.type || 'get', res.response)
   return res
 }

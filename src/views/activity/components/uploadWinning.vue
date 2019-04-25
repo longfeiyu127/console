@@ -1,20 +1,21 @@
 <template>
 <el-dialog title="上传抽奖号码" :visible.sync="dialogVisible" width="800px">
   <UploadExcel :on-success="handleSuccess" />
-  <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
+  <el-table :data="tableData" border highlight-current-row height="250" style="width: 100%;margin-top:20px;">
     <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
   </el-table>
   <div slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    <el-button type="primary" @click="confirm">确 定</el-button>
   </div>
 </el-dialog>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
-import { Form, FormItem, Input, Button } from 'element-ui'
+import { Form, FormItem, Input, Button, Message } from 'element-ui'
 import UploadExcel from '@/components/UploadExcel/index.vue'
 import { ActivityModule } from '@/store/modules/activity'
+import $http from '@/api'
 
 @Component({
   components: {
@@ -31,6 +32,20 @@ export default class uploadWinning extends Vue {
   private handleSuccess({ results, header }: any) {
     this.tableData = results
     this.tableHeader = header
+  }
+  private async confirm() {
+    console.log(this.tableData)
+    if (this.tableData.length) {
+      const phoneList = this.tableData.map(item => item['签到号码'])
+      const res = await $http.activity.setPrizePool({ ...ActivityModule.account, phoneList })
+      if (res.resCode === 0) {
+        Message({
+          message: '上传成功',
+          type: 'success',
+          duration: 5 * 1000
+        })
+      }
+    }
   }
   @Watch('dialogVisible')
   private OnDialogVisible(val: boolean) {

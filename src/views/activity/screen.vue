@@ -6,7 +6,7 @@
       </div>
       <div class="lottery-content">
         <ul>
-          <li v-for="(item, index) in phone" :key="index" :style="{color: activityConfig.mobileColor}">{{ item }}</li>
+          <li v-for="(item, index) in getPhone" :key="index" :style="{color: activityConfig.mobileColor}">{{ item }}</li>
         </ul>
       </div>
     </div>
@@ -16,13 +16,10 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { ActivityModule } from '@/store/modules/activity'
-const ActivityConfig = require('@/static/activityConfig.json')
+import { ActivityStatus } from './console.vue'
+import $http from '@/api'
 
-export enum ActivityStatus {
-  Unstart,
-  Start,
-  End
-}
+const ActivityConfig = require('@/static/activityConfig.json')
 
 const debounce = (fn: any) => () => {
   clearTimeout(fn.timer)
@@ -30,22 +27,15 @@ const debounce = (fn: any) => () => {
 }
 
 let setCenter: any = null
+let timer: any = null
+let getPrizeStatusTimer: any = null
 
 @Component
 export default class Screen extends Vue {
   private activityConfig = ActivityConfig[ActivityModule.activityName || 'a20190414']
-  private phone = ['1', '8', '8', '*', '*', '*', '*', '8', '8', '8', '8']
-  private status = '0'
-  /**
-   * const activity = this.$route.query.activity || 'a20190414'
-    const activityConfig = config[activity]
-    return {
-      activityConfig,
-      activity,
-      phone: ['1', '8', '8', '*', '*', '*', '*', '8', '8', '8', '8'],
-      status: '0'
-    }
-   */
+  private phone: string = '188****8888'
+  private status: ActivityStatus = 0
+
   private setCenterHW() {
     console.log('窗口变化')
     const { clientWidth, clientHeight } = document.documentElement
@@ -60,16 +50,48 @@ export default class Screen extends Vue {
     }
   }
 
+  get getPhone(): string[] {
+    const res = []
+    for (let i = 0; i < this.phone.length; i++) {
+      if (i >= 3 && i <= 6) {
+        res.push('*')
+      } else {
+        res.push(this.phone.charAt(i))
+      }
+    }
+    return res
+  }
+
+  private setPhone() {
+    this.phone = parseInt((10000000000 + Math.random() * 10000000000).toString()).toString()
+  }
+
+  private async getPrizeStatus() {
+    const res = await $http.activity.getPrizeStatus({ activityKey: ActivityModule.account.activityKey })
+    // console.log(res)
+    if (res.resCode !== 0) return
+    this.status = +res.resData.status
+    if (this.status === 2) {
+      clearInterval(timer)
+      this.phone = res.resData.number
+    } else if (this.status === 1) {
+      timer = setInterval(this.setPhone, 100)
+    }
+  }
+
   private created() {
     if (this.$route.path === '/activity/screen') {
       setCenter = debounce(this.setCenterHW)
-      console.log(setCenter)
+      // console.log(setCenter)
       setCenter()
       window.addEventListener('resize', setCenter)
     }
+    getPrizeStatusTimer = setInterval(() => this.getPrizeStatus(), 1000)
   }
   private destroyed() {
     window.removeEventListener('resize', setCenter)
+    clearInterval(timer)
+    clearInterval(getPrizeStatusTimer)
   }
 }
 </script>

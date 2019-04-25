@@ -17,7 +17,6 @@ function format(str: string, obj: any) {
 export const request = [
   (config: any): Object => {
     let { url, data, method = 'GET' } = config
-    console.log(config)
     if (urlPlaceholder.test(url)) {
       url = format(url, data)
     }
@@ -36,8 +35,15 @@ export const request = [
       url,
       [dataName]: data,
       paramsSerializer(params: object) {
+        // 对 params 进行任意转换处理
+        // console.log(params)
         return stringify(params)
       },
+      transformRequest: [(data: any) => {
+        // 对 data 进行任意转换处理
+        // console.log(data)
+        return JSON.stringify(data)
+      }],
       method,
       headers
     }
@@ -51,22 +57,23 @@ export const request = [
 export const response = [
   (response: any) => {
     // Some example codes here:
-    // code == 20000: valid
-    // code == 50008: invalid token
-    // code == 50012: already login in other place
-    // code == 50014: token expired
-    // code == 60204: account or password is incorrect
+    // resCode == 20000: valid
+    // resCode == 50008: invalid token
+    // resCode == 50012: already login in other place
+    // resCode == 50014: token expired
+    // resCode == 60204: account or password is incorrect
     // You can change this part for your own usage.
-    const res = response.data
-    console.log(response)
-    console.log(res)
-    if (res.code !== 20000) {
+    const res = JSON.parse(response.data)
+    // console.log(response)
+    // console.log(res)
+    // console.log(res.resCode)
+    if (res.resCode !== 0 && !response.config.headers.hideMsg) {
       Message({
-        message: res.message,
+        message: `error with resCode: ${res.resMsg}`,
         type: 'error',
         duration: 5 * 1000
       })
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.resCode === 401) {
         MessageBox.confirm(
           '你已被登出，可以取消继续留在该页面，或者重新登录',
           '确定登出',
@@ -81,13 +88,16 @@ export const response = [
           })
         })
       }
-      return Promise.reject(new Error('error with code: ' + res.code))
+      console.log(res.resMsg)
+      // new Error(`error with resCode: ${res.resMsg}`)
+      // return Promise.reject(`error with resCode: ${res.resMsg}`)
+      return res
     } else {
-      return response.data
+      return res
     }
   },
   (err: any) => {
-    console.log(err)
+    console.log('err', err)
     if (err && err.response) {
       switch (err.response.status) {
         case 400:

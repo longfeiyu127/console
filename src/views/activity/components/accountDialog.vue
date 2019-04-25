@@ -21,7 +21,7 @@
       </el-form>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="confirm">修改时间</el-button>
+      <el-button type="primary" @click.native="confirm">确定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -30,6 +30,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { Form, FormItem, Input, Button } from 'element-ui'
 import { ActivityModule } from '@/store/modules/activity'
+import $http from '@/api'
 const ActivityConfig = require('@/static/activityConfig.json')
 const ActivityConfigKeys = Object.keys(ActivityConfig)
 const selectData = ActivityConfigKeys.map(item => {
@@ -55,11 +56,16 @@ export default class AccountDialog extends Vue {
     activityKey: ''
   }
 
-  private confirm() {
+  private async confirm() {
     console.log(this.account)
-    ActivityModule.setAccount(this.account)
-    ActivityModule.setActivityName(selectData.filter(item => item.activityKey === this.account.activityKey)[0].item || '')
-    this.dialogVisible = false
+    const res = await $http.activity.oprlogin(this.account)
+    console.log(res)
+    if (res.resCode === 0) {
+      console.log(this.account)
+      ActivityModule.setAccount(this.account)
+      ActivityModule.setActivityName(selectData.filter(item => item.activityKey === this.account.activityKey)[0].item || '')
+      this.dialogVisible = false
+    }
   }
 
   @Watch('dialogVisible')
