@@ -23,9 +23,18 @@ export default [
         name: 'Sitemap',
         component: () =>
           import(
-            /* webpackChunkName: "console" */ '@/views/site/sitemap.vue'
+            /* webpackChunkName: "console" */ '@/views/site/sitemap/index.vue'
           ),
         meta: { title: '网站地图', icon: 'tree' }
+      },
+      {
+        path: 'sitePermission',
+        name: 'sitePermission',
+        component: () =>
+          import(
+            /* webpackChunkName: "console" */ '@/views/site/sitePermission/index.vue'
+          ),
+        meta: { title: '功能权限', icon: 'tree' }
       }
     ]
   }

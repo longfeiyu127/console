@@ -14,6 +14,8 @@ Mock.mock(/\/table\/list/, 'get', tableAPI.list)
 
 Mock.mock(/\/ols\/mobile/, 'post', tableAPI.list)
 
+Mock.mock(/\/article\/list/, 'get', tableAPI.article)
+
 const mocks = [
   // ...userAPI,
   // ...tableAPI
