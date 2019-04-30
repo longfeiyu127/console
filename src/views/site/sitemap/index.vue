@@ -23,15 +23,15 @@ import SiteTab from './components/siteTab.vue'
 })
 export default class Sitemap extends Vue {
   private tabMapOptions = [
-    { label: '保单查询', key: 'CN' },
-    { label: '保单服务', key: 'US' },
-    { label: '个险理赔', key: 'JP' },
-    { label: '团险理赔', key: 'JP1' },
-    { label: '活动相关', key: 'JP2' },
-    { label: '增值服务', key: 'JP3' },
-    { label: '附加功能', key: 'JP4' },
-    { label: '用户', key: 'JP5' },
-    { label: '产品', key: 'EU' }
+    { label: '保单查询', key: 'policyQuery' },
+    { label: '保单服务', key: 'policyApplication' },
+    { label: '个险理赔', key: 'claimIndividual' },
+    { label: '团险理赔', key: 'claim' },
+    { label: '活动相关', key: 'activity' },
+    { label: '增值服务', key: 'appreciation' },
+    { label: '辅助功能', key: 'auxiliary' },
+    { label: '用户', key: 'user' },
+    { label: '产品', key: 'product' }
   ]
   private activeName = 'CN'
   private createdTimes = 0

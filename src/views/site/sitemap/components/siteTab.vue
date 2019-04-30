@@ -8,19 +8,19 @@
       element-loading-text="请给我点时间！"
     >
       <template slot-scope="scope">
-        <span>{{ scope.row.id }}</span>
+        <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
     <el-table-column width="100px" align="center" label="上线时间">
       <template slot-scope="scope">
-        <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        <span>{{ scope.row.display_time | parseTime('{y}-{m}-{d}') }}</span>
       </template>
     </el-table-column>
 
     <el-table-column min-width="200px" align="center" label="链接">
       <template slot-scope="{row}">
-        <span>{{ row.title }}</span>
+        <span>{{ row.link }}</span>
         <!-- <el-tag>{{ row.type }}</el-tag> -->
       </template>
     </el-table-column>
@@ -40,14 +40,20 @@
     <el-table-column class-name="status-col" align="center" label="上线状态" width="110">
       <template slot-scope="{row}">
         <el-tag :type="row.status | statusFilter">
-          {{ row.status }}
+          {{ row.status | statusFilterInfo }}
         </el-tag>
+      </template>
+    </el-table-column>
+
+    <el-table-column class-name="status-col" align="center" label="操作" width="110">
+      <template slot-scope="{row}">
+        <el-button type="primary" @click.native="modify(row)">修改</el-button>
       </template>
     </el-table-column>
 
     <el-table-column align="center" label="备注" width="95">
       <template slot-scope="scope">
-        <span>{{ scope.row.pageviews }}</span>
+        <span>{{ scope.row.remark }}</span>
       </template>
     </el-table-column>
   </el-table>
@@ -56,7 +62,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import { Table, TableColumn, Tag, Button } from 'element-ui'
-import { fetchList } from '@/api/article'
+import $http from '@/api'
 import { parseTime } from '@/utils'
 
 @Component({
@@ -65,9 +71,18 @@ import { parseTime } from '@/utils'
     parseTime,
     statusFilter(status: string) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        '0': 'danger',
+        '1': 'info',
+        '2': 'success'
+      }
+      // @ts-ignore
+      return statusMap[status]
+    },
+    statusFilterInfo(status: string) {
+      const statusMap = {
+        '0': '未上线',
+        '1': '预发布',
+        '2': '已上线'
       }
       // @ts-ignore
       return statusMap[status]
@@ -75,7 +90,7 @@ import { parseTime } from '@/utils'
   }
 })
 export default class SiteTab extends Vue {
-  @Prop({ default: 'CN' }) private type!: string
+  @Prop({ default: 'policyQuery' }) private type!: string
   private list = []
   private listQuery = {
     page: 1,
@@ -85,14 +100,22 @@ export default class SiteTab extends Vue {
   }
   private loading = false
 
-  private getList() {
+  private async getList() {
     this.loading = true
     this.$emit('create') // for test
-    fetchList(this.listQuery).then((response): any => {
-      console.log(response)
-      this.list = response.data.items
-      this.loading = false
-    })
+    const res = await $http.site.sitemap({type: this.type})
+    console.log(res)
+    this.list = res.resData
+    this.loading = false
+    // fetchList(this.listQuery).then((response): any => {
+    //   console.log(response)
+    //   this.list = response.data.items
+    //   this.loading = false
+    // })
+  }
+
+  private async modify(item: any) {
+
   }
 
   /**
