@@ -43,8 +43,8 @@ export default class AccountDialog extends Vue {
   private dialogVisible = false
   private formLabelWidth = '60px'
   private account = {
-    oprAccount: '',
-    password: '',
+    oprAccount: '13100000001',
+    password: 'emhhb3NoYW5nMTg3MnNpbmNlMTg3MmNtcmg=',
     activityKey: ''
   }
 

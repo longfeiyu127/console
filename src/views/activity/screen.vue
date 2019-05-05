@@ -5,8 +5,8 @@
         <img :src="activityConfig.bannerUrl" alt="背景">
       </div>
       <div class="lottery-content">
-        <ul>
-          <li v-for="(item, index) in getPhone" :key="index" :style="{color: activityConfig.mobileColor}">{{ item }}</li>
+        <ul :style="{fontSize: (centerWidth / 375.0 * 100) + 'px'}">
+          <li v-for="(item, index) in getPhone" :key="index" :class="{asterisk: index >= 3 && index <= 6}" :style="{color: activityConfig.mobileColor}">{{ item }}</li>
         </ul>
       </div>
     </div>
@@ -33,9 +33,10 @@ export default class Screen extends Vue {
   private activityConfig = ActivityModule.ActivityConfig[ActivityModule.activityName || 'a20190414']
   private phone: string = '188****8888'
   private status: ActivityStatus = 0
+  private centerWidth = 100
 
   private setCenterHW() {
-    console.log('窗口变化')
+    // console.log('窗口变化')
     const { clientWidth, clientHeight } = document.documentElement
     const center: any = this.$refs.center
     const ratio = 1792 / 1024
@@ -46,6 +47,8 @@ export default class Screen extends Vue {
       center.style.width = `${clientWidth}px`
       center.style.height = `${clientWidth / ratio}px`
     }
+    this.centerWidth = parseInt(center.style.width)
+    // console.log('this.centerWidth', this.centerWidth)
   }
 
   get getPhone(): string[] {
@@ -137,37 +140,34 @@ export default class Screen extends Vue {
       align-items: center;
       position: relative;
       left: 50%;
-      top: 65%;
+      top: 67%;
       transform: translate(-50%, -50%);
       li {
         list-style: none;
-        margin: 0 0.3rem;
-        font: 3rem "STYuanti-SC-Bold";
-        padding: 0.02rem;
+        margin: 0 0.15em;
+        font: .3em "STYuanti-SC-Bold";
+        padding: 0.02em;
         height: 100%;
         line-height: 100%;
         background: #fff;
         border-radius: 8px;
-        box-shadow: 0 0.04rem 0.04rem rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.2);
         position: relative;
         z-index: 1;
       }
-      li:nth-child(4),
-      li:nth-child(5),
-      li:nth-child(6),
-      li:nth-child(7) {
-        margin: 0 0.015rem;
-        font: 0.26rem "STYuanti-SC-Regular";
+      li.asterisk{
+        margin: 0 0.015em;
+        font: 0.26em "STYuanti-SC-Regular";
         height: 28%;
         line-height: 28%;
         background: none;
         color: #fff;
         position: relative;
-        top: 0.04rem;
+        top: 0.04em;
         box-shadow: none;
       }
       li:nth-child(7) {
-        margin: 0 0.03rem;
+        margin: 0 0.03em;
       }
     }
   }
