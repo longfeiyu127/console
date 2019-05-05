@@ -21,6 +21,7 @@ class App extends VuexModule implements IActivityState {
     activityKey: ''
   }
   public activityName = ''
+  public ActivityConfig: any = null
 
   @Action({ commit: 'SET_ACCOUNT' })
   public setAccount(account: Account) {
@@ -33,6 +34,11 @@ class App extends VuexModule implements IActivityState {
     return activityName
   }
 
+  @Action({ commit: 'SET_ACTIVITY_CONFIG' })
+  public setActivityConfig(ActivityConfig: Object) {
+    return ActivityConfig
+  }
+
   @Mutation
   private SET_ACCOUNT(account: Account) {
     this.account = account
@@ -41,6 +47,11 @@ class App extends VuexModule implements IActivityState {
   @Mutation
   private SET_ACTIVITY_NAME(activityName: string) {
     this.activityName = activityName
+  }
+
+  @Mutation
+  private SET_ACTIVITY_CONFIG(ActivityConfig: Object) {
+    this.ActivityConfig = ActivityConfig
   }
 }
 

@@ -31,15 +31,6 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { Form, FormItem, Input, Button } from 'element-ui'
 import { ActivityModule } from '@/store/modules/activity'
 import $http from '@/api'
-const ActivityConfig = require('@/static/activityConfig.json')
-const ActivityConfigKeys = Object.keys(ActivityConfig)
-const selectData = ActivityConfigKeys.map(item => {
-  return {
-    item,
-    name: ActivityConfig[item].name,
-    activityKey: ActivityConfig[item].activityKey
-  }
-})
 
 @Component({
   name: 'SetSiteDialog'
@@ -47,7 +38,7 @@ const selectData = ActivityConfigKeys.map(item => {
 export default class SetSiteDialog extends Vue {
   @Prop({ required: true }) private visible!: boolean
 
-  private selectData = selectData
+  private selectData: any[] = []
   private dialogVisible = false
   private formLabelWidth = '60px'
   private account = {
@@ -63,7 +54,7 @@ export default class SetSiteDialog extends Vue {
     if (res.resCode === 0) {
       console.log(this.account)
       ActivityModule.setAccount(this.account)
-      ActivityModule.setActivityName(selectData.filter(item => item.activityKey === this.account.activityKey)[0].item || '')
+      ActivityModule.setActivityName(this.selectData.filter(item => item.activityKey === this.account.activityKey)[0].item || '')
       this.dialogVisible = false
     }
   }
@@ -80,6 +71,18 @@ export default class SetSiteDialog extends Vue {
     if (val !== this.dialogVisible) {
       this.dialogVisible = val
     }
+  }
+
+  private created() {
+    const ActivityConfigKeys = Object.keys(ActivityModule.ActivityConfig)
+    const selectData = ActivityConfigKeys.map(item => {
+      return {
+        item,
+        name: ActivityModule.ActivityConfig[item].name,
+        activityKey: ActivityModule.ActivityConfig[item].activityKey
+      }
+    })
+    this.selectData = selectData
   }
 }
 </script>

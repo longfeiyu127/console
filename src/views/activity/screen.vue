@@ -19,8 +19,6 @@ import { ActivityModule } from '@/store/modules/activity'
 import { ActivityStatus } from './console.vue'
 import $http from '@/api'
 
-const ActivityConfig = require('@/static/activityConfig.json')
-
 const debounce = (fn: any) => () => {
   clearTimeout(fn.timer)
   fn.timer = setTimeout(fn, 300)
@@ -32,7 +30,7 @@ let getPrizeStatusTimer: any = null
 
 @Component
 export default class Screen extends Vue {
-  private activityConfig = ActivityConfig[ActivityModule.activityName || 'a20190414']
+  private activityConfig = ActivityModule.ActivityConfig[ActivityModule.activityName || 'a20190414']
   private phone: string = '188****8888'
   private status: ActivityStatus = 0
 

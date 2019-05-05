@@ -44,5 +44,19 @@ export default {
   // 下载APP中奖数据
   getAppDrawWonPrizes: {
     url: '/ols/activity/vip/getAppDrawWonPrizes'
+  },
+  // 获取活动列表
+  getActivityList: {
+    url: '/olsc/activity/list'
+  },
+  // 创建活动配置
+  updateConfig: {
+    method: 'POST',
+    url: '/olsc/activity/update'
+  },
+  // 创建活动配置
+  createConfig: {
+    method: 'POST',
+    url: '/olsc/activity/createConfig'
   }
 }

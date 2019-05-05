@@ -17,15 +17,6 @@ import { Component, Vue } from 'vue-property-decorator'
 import { Form, FormItem, DatePicker, Button, Message } from 'element-ui'
 import { ActivityModule } from '@/store/modules/activity'
 import $http from '@/api'
-const ActivityConfig = require('@/static/activityConfig.json')
-const ActivityConfigKeys = Object.keys(ActivityConfig)
-const selectData = ActivityConfigKeys.map(item => {
-  return {
-    item,
-    name: ActivityConfig[item].name,
-    activityKey: ActivityConfig[item].activityKey
-  }
-})
 
 interface ActivityTimeConfig {
   activityKey: string,
@@ -42,7 +33,7 @@ interface ActivityTimeConfig {
 export default class ActivityTime extends Vue {
   get date():any {
     // console.log(ActivityConfig[ActivityModule.activityName || 'a20190414'])
-    const date = ActivityConfig[ActivityModule.activityName || 'a20190414'].date.map((item: any) => {
+    const date = ActivityModule.ActivityConfig[ActivityModule.activityName || 'a20190414'].date.map((item: any) => {
       if (!item.time) {
         item.time = [
           item.startTime,

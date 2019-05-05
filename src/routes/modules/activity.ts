@@ -26,6 +26,15 @@ export default [
             /* webpackChunkName: "console" */ '@/views/activity/console.vue'
           ),
         meta: { title: '抽奖后台', icon: 'example' }
+      },
+      {
+        path: 'configEditor',
+        name: 'ConfigEditor',
+        component: () =>
+          import(
+            /* webpackChunkName: "console" */ '@/views/activity/configEditor.vue'
+          ),
+        meta: { title: '抽奖配置', icon: 'example' }
       }
     ]
   },

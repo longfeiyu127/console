@@ -1,45 +1,47 @@
 <template>
   <div class="app-container">
-    <form-title>设置活动时间</form-title>
-    <!-- 活动时间 -->
-    <activity-time />
-    <!-- 活动控制 -->
-    <form-title>抽奖</form-title>
-    <div class="flex-box">
-      <div class="flex-item">
-        <el-form ref="form11" label-width="80px">
-          <el-form-item>
-            <el-button type="primary" @click="uploadVisible = true">上传中奖号码</el-button>
-          </el-form-item>
-          <el-form-item label="奖项">
-            <el-radio-group v-model="prizeType">
-              <el-radio v-for="item in activityConfig.awards" :label="item.key" :key="item.key">{{ item.name }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="lottery">抽奖</el-button>
-            <el-button type="primary" @click="stopLottery">停止抽奖</el-button>
-          </el-form-item>
-          <el-form-item>
-            <p>剩余抽奖次数 {{ remainTime }} 次</p>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="setRemainTime">重置抽奖次数</el-button>
-          </el-form-item>
-        </el-form>
+    <div v-if="!centerDialogVisible">
+      <form-title>设置活动时间</form-title>
+      <!-- 活动时间 -->
+      <activity-time />
+      <!-- 活动控制 -->
+      <form-title>抽奖</form-title>
+      <div class="flex-box">
+        <div class="flex-item">
+          <el-form ref="form11" label-width="80px">
+            <el-form-item>
+              <el-button type="primary" @click="uploadVisible = true">上传中奖号码</el-button>
+            </el-form-item>
+            <el-form-item label="奖项">
+              <el-radio-group v-model="prizeType">
+                <el-radio v-for="item in activityConfig.awards" :label="item.key" :key="item.key">{{ item.name }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="lottery">抽奖</el-button>
+              <el-button type="primary" @click="stopLottery">停止抽奖</el-button>
+            </el-form-item>
+            <el-form-item>
+              <p>剩余抽奖次数 {{ remainTime }} 次</p>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="setRemainTime">重置抽奖次数</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="flex-item" @click="$router.push('/activity/screen')">
+          <screen />
+        </div>
       </div>
-      <div class="flex-item" @click="$router.push('/activity/screen')">
-        <screen />
-      </div>
+      <form-title>下载专区</form-title>
+      <el-form ref="form2" label-width="80px">
+        <el-form-item>
+          <el-button type="primary" @click="downLoadSignList">下载签到表</el-button>
+          <el-button type="primary" @click="downLoadgWonPrizes">下载大屏幕中奖清单</el-button>
+          <el-button type="primary" @click="downLoadgAppWonPrizes">下载APP中奖清单</el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <form-title>下载专区</form-title>
-    <el-form ref="form2" label-width="80px">
-      <el-form-item>
-        <el-button type="primary" @click="downLoadSignList">下载签到表</el-button>
-        <el-button type="primary" @click="downLoadgWonPrizes">下载大屏幕中奖清单</el-button>
-        <el-button type="primary" @click="downLoadgAppWonPrizes">下载APP中奖清单</el-button>
-      </el-form-item>
-    </el-form>
     <account-dialog :visible.sync="centerDialogVisible" />
     <upload-winning :visible.sync="uploadVisible" />
   </div>
@@ -47,6 +49,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Route } from 'vue-router'
 import { Form, FormItem, Input, RadioGroup, Radio, CheckboxGroup, Checkbox, Switch, Col, Select, Option, Message } from 'element-ui'
 import { TreeData } from 'element-ui/types/tree'
 import FormTitle from '@/components/FormTitle/index.vue'
@@ -57,8 +60,6 @@ import Screen from '@/views/activity/screen.vue'
 import { parseTime } from '@/utils'
 import { ActivityModule } from '@/store/modules/activity'
 import $http from '@/api'
-
-const ActivityConfig = require('@/static/activityConfig.json')
 
 interface excelOption {
   multiHeader?: any[] | undefined,
@@ -90,9 +91,10 @@ let Export2Excel: any = null
 export default class Console extends Vue {
   get activityConfig():any {
     // console.log(ActivityConfig[ActivityModule.activityName || 'a20190414'])
-    return ActivityConfig[ActivityModule.activityName || 'a20190414']
+    // @ts-ignore
+    return ActivityModule.ActivityConfig[ActivityModule.activityName || 'a20190414']
   }
-  private centerDialogVisible = ActivityModule.activityName !== ''
+  private centerDialogVisible = ActivityModule.activityName === ''
   private uploadVisible = false
   private prizeType = ''
   private remainTime = '5'
@@ -105,10 +107,7 @@ export default class Console extends Vue {
   private created() {
     // console.log(ActivityModule)
     console.log('ActivityModule.activityName', ActivityModule.activityName)
-    if (ActivityModule.activityName === '') {
-      // console.log(ActivityModule)
-      this.centerDialogVisible = true
-    }
+    this.centerDialogVisible = ActivityModule.activityName === ''
   }
 
   get activityName() {
@@ -226,10 +225,9 @@ export default class Console extends Vue {
 
   private onSubmit() {
     console.log('提交')
-    const a = ActivityConfig
+    const a = ActivityModule.ActivityConfig
     console.log(a)
     console.log(this.activityConfig)
-    // console.log(ActivityConfig)
   }
   // 点击抽奖
   private async lottery() {
@@ -291,6 +289,23 @@ export default class Console extends Vue {
       type: 'success',
       duration: 5 * 1000
     })
+  }
+
+  private async beforeRouteEnter(to: Route, form: Route, next: () => void) {
+    console.log(JSON.parse(JSON.stringify(ActivityModule.ActivityConfig)))
+    if (ActivityModule.ActivityConfig) {
+      next()
+    } else {
+      const res = await $http.activity.getActivityList()
+      if (res.resCode !== 0) return next()
+      let data: any = {}
+      res.resData.map((item: any): void => {
+        data[item.activityID] = JSON.parse(item.config)
+      })
+      console.log(JSON.parse(JSON.stringify(data)))
+      ActivityModule.setActivityConfig(data)
+      next()
+    }
   }
 }
 </script>

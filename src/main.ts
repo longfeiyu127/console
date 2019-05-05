@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Component from 'vue-class-component'
 
 import 'normalize.css'
 import ElementUI from 'element-ui'
@@ -31,6 +32,12 @@ Vue.use(SvgIcon, {
   defaultWidth: '1em',
   defaultHeight: '1em'
 })
+
+Component.registerHooks([
+  'beforeRouteEnter',
+  'beforeRouteLeave',
+  'beforeRouteUpdate'
+])
 
 Vue.config.productionTip = false
 
