@@ -11,13 +11,16 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@types/codemirror": "^0.0.74",
     "@types/qs": "^6.5.3",
     "axios": "^0.18.0",
+    "codemirror": "^5.46.0",
     "core-js": "^2.6.5",
     "element-ui": "^2.6.3",
     "eslint-plugin-prettier": "^3.0.1",
     "file-saver": "^2.0.1",
     "js-cookie": "^2.2.0",
+    "jsonlint": "^1.6.3",
     "mockjs": "^1.0.1-beta3",
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",

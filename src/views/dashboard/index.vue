@@ -1,8 +1,9 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name:{{ name }}</div>
+    <div class="dashboard-text">姓名:{{ userData.name }}</div>
+    <div class="dashboard-text">公司:{{ userData.company }}</div>
     <div class="dashboard-text">
-      roles:<span v-for="role in roles" :key="role">{{ role }}</span>
+      身份:<span v-for="role in userData.roles" :key="role">{{ role }}</span>
     </div>
   </div>
 </template>
@@ -13,12 +14,8 @@ import { UserModule } from '@/store/modules/user'
 
 @Component
 export default class Dashboard extends Vue {
-  get name() {
-    return UserModule.name
-  }
-
-  get roles() {
-    return UserModule.roles
+  get userData() {
+    return UserModule.userData
   }
 }
 </script>

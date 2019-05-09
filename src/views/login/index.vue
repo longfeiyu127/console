@@ -49,10 +49,10 @@
           登 录
         </el-button>
       </el-form-item>
-      <div class="tips">
+      <!-- <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: admin</span>
-      </div>
+      </div> -->
     </el-form>
   </div>
 </template>
@@ -63,13 +63,15 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { Route } from 'vue-router'
 import { Form as ElForm } from 'element-ui'
+import $http from '@/api'
 
 const validateUsername = (rule: any, value: string, callback: any) => {
-  if (!isValidUsername(value)) {
-    callback(new Error('请输入正确的用户名'))
-  } else {
-    callback()
-  }
+  callback()
+  // if (!isValidUsername(value)) {
+  //   callback(new Error('请输入正确的用户名'))
+  // } else {
+  //   callback()
+  // }
 }
 const validatePass = (rule: any, value: string, callback: any) => {
   if (value.length < 5) {
@@ -82,8 +84,9 @@ const validatePass = (rule: any, value: string, callback: any) => {
 @Component
 export default class Login extends Vue {
   private loginForm = {
-    username: 'admin',
-    password: 'admin'
+    username: 'longxx001',
+    password: 'fLy19940517,,',
+    userType: 'STAFF'
   }
   private loginRules = {
     username: [
@@ -112,8 +115,17 @@ export default class Login extends Vue {
 
   private handleLogin() {
     (this.$refs.loginForm as ElForm).validate((valid: boolean) => {
+      console.log(valid)
       if (valid) {
         this.loading = true
+        // $http.user.login(this.loginForm)
+        //   .then(() => {
+        //     this.loading = false
+        //     this.$router.push({ path: this.redirect || '/' })
+        //   })
+        //   .catch(() => {
+        //     this.loading = false
+        //   })
         UserModule.Login(this.loginForm)
           .then(() => {
             this.loading = false

@@ -5,9 +5,9 @@ import roleAPI from './role/index'
 import { param2Obj } from './utils'
 
 // User
-Mock.mock(/\/user\/login/, 'post', userAPI.login)
+// Mock.mock(/\/user\/login/, 'post', userAPI.login)
 Mock.mock(/\/user\/info/, 'get', userAPI.getUserInfo)
-Mock.mock(/\/user\/logout/, 'post', userAPI.logout)
+// Mock.mock(/\/user\/logout/, 'post', userAPI.logout)
 
 // Table
 Mock.mock(/\/table\/list/, 'get', tableAPI.list)

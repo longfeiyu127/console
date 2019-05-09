@@ -23,11 +23,11 @@ export const request = [
     let headers = {
       'X-Session-Mode': 'header',
       'X-Session-Id': sessionStorage.getItem('X-Session-Id') || null,
-      'Authorization': 'Bearer ' + sessionStorage.getItem('Authorization') || null,
+      'Authorization': `Bearer ${UserModule.userData.token || null}`,
       ...config.headers
     }
     // Add X-Token header to every request, you can add other custom headers here
-    if (UserModule.token) {
+    if (UserModule.userData.token) {
       config.headers['X-Token'] = getToken()
     }
     const dataName = method && methods.includes(method.toLowerCase()) ? 'data' : 'params'

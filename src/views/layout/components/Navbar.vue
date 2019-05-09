@@ -51,10 +51,9 @@ export default class Navbar extends Vue {
     AppModule.ToggleSideBar(false)
   }
 
-  private logout() {
-    UserModule.LogOut().then(() => {
-      location.reload() // 为了重新实例化vue-router对象 避免bug
-    })
+  private async logout() {
+    await UserModule.LogOut()
+    location.reload()
   }
 }
 </script>

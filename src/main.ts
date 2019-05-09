@@ -18,9 +18,9 @@ import http from '@/api'
 import '../mock' // simulation data requests
 
 import App from '@/App.vue'
-import store from '@/store'
 import router from '@/routes'
 import '@/routes/permission'
+import store from '@/store'
 import '@/registerServiceWorker'
 
 // console.log(http)

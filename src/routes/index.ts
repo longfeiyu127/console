@@ -4,6 +4,7 @@ import Layout from '@/views/layout/Layout.vue'
 import Activity from './modules/activity'
 import Site from './modules/site'
 import Permission from './modules/permission'
+import { PermissionModule } from '@/store/modules/permission'
 
 Vue.use(Router)
 
@@ -209,6 +210,14 @@ export function resetRouter() {
   const newRouter = createRouter()
   // @ts-ignore
   router.matcher = newRouter.matcher // reset router
+}
+
+console.log(router)
+
+export const addRoutes = async(roles : string[]) => {
+  const accessRoutes: any = await PermissionModule.generateRoutes(roles)
+  console.log(accessRoutes)
+  router.addRoutes(accessRoutes)
 }
 
 export default router

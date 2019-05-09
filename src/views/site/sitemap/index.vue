@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Button } from 'element-ui'
 import SiteTab from './components/siteTab.vue'
 
 @Component({

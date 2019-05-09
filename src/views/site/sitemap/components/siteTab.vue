@@ -1,72 +1,82 @@
 <template>
-  <el-table :data="list" border fit highlight-current-row style="width: 100%">
-    <el-table-column
-      v-loading="loading"
-      align="center"
-      label="功能名称"
-      width="180px"
-      element-loading-text="请给我点时间！"
-    >
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
+  <div>
+    <div style="marginBottom: 10px;">
+      <el-button type="primary" @click.native="add()">添加</el-button>
+    </div>
+    <el-table :data="list" border fit highlight-current-row style="width: 100%">
+      <el-table-column
+        v-loading="loading"
+        align="center"
+        label="功能名称"
+        width="180px"
+        element-loading-text="请给我点时间！"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
 
-    <el-table-column width="100px" align="center" label="上线时间">
-      <template slot-scope="scope">
-        <span>{{ scope.row.display_time | parseTime('{y}-{m}-{d}') }}</span>
-      </template>
-    </el-table-column>
+      <el-table-column width="100px" align="center" label="上线时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.display_time | parseTime('{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
 
-    <el-table-column min-width="200px" align="center" label="链接">
-      <template slot-scope="{row}">
-        <span>{{ row.link }}</span>
-        <!-- <el-tag>{{ row.type }}</el-tag> -->
-      </template>
-    </el-table-column>
+      <el-table-column min-width="200px" align="center" label="链接">
+        <template slot-scope="{row}">
+          <span>{{ row.link }}</span>
+          <!-- <el-tag>{{ row.type }}</el-tag> -->
+        </template>
+      </el-table-column>
 
-    <el-table-column width="110px" align="center" label="开发/维护">
-      <template slot-scope="scope">
-        <span>{{ scope.row.author }}</span>
-      </template>
-    </el-table-column>
+      <el-table-column width="110px" align="center" label="开发/维护">
+        <template slot-scope="scope">
+          <span>{{ scope.row.author }}</span>
+        </template>
+      </el-table-column>
 
-    <!-- <el-table-column width="120px" label="Importance">
-      <template slot-scope="scope">
-        <svg-icon v-for="n in 5" :key="n" icon-class="star" />
-      </template>
-    </el-table-column> -->
+      <!-- <el-table-column width="120px" label="Importance">
+        <template slot-scope="scope">
+          <svg-icon v-for="n in 5" :key="n" icon-class="star" />
+        </template>
+      </el-table-column> -->
 
-    <el-table-column class-name="status-col" align="center" label="上线状态" width="110">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
-          {{ row.status | statusFilterInfo }}
-        </el-tag>
-      </template>
-    </el-table-column>
+      <el-table-column class-name="status-col" align="center" label="上线状态" width="110">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status | statusFilterInfo }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
-    <el-table-column class-name="status-col" align="center" label="操作" width="110">
-      <template slot-scope="{row}">
-        <el-button type="primary" @click.native="modify(row)">修改</el-button>
-      </template>
-    </el-table-column>
+      <el-table-column class-name="status-col" align="center" label="操作" width="110">
+        <template slot-scope="{row}">
+          <el-button type="primary" @click.native="modify(row)">修改</el-button>
+        </template>
+      </el-table-column>
 
-    <el-table-column align="center" label="备注" width="95">
-      <template slot-scope="scope">
-        <span>{{ scope.row.remark }}</span>
-      </template>
-    </el-table-column>
-  </el-table>
+      <el-table-column align="center" label="备注" width="95">
+        <template slot-scope="scope">
+          <span>{{ scope.row.remark }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+    <addDialog :visible="showAddDialog" />
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import { Table, TableColumn, Tag, Button } from 'element-ui'
+import addDialog from './addDialog.vue'
 import $http from '@/api'
 import { parseTime } from '@/utils'
 
 @Component({
   name: 'SiteTab',
+  components: {
+    addDialog
+  },
   filters: {
     parseTime,
     statusFilter(status: string) {
@@ -99,6 +109,7 @@ export default class SiteTab extends Vue {
     sort: '+id'
   }
   private loading = false
+  private showAddDialog = false
 
   private async getList() {
     this.loading = true
@@ -116,6 +127,11 @@ export default class SiteTab extends Vue {
 
   private async modify(item: any) {
 
+  }
+
+  private async add() {
+    console.log(this.type)
+    this.showAddDialog = true
   }
 
   /**
