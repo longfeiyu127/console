@@ -34,7 +34,7 @@ export default [
           import(
             /* webpackChunkName: "console" */ '@/views/activity/configEditor.vue'
           ),
-        meta: { title: '抽奖配置', icon: 'example' }
+        meta: { title: '抽奖配置', icon: 'form' }
       }
     ]
   },

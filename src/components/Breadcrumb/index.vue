@@ -40,7 +40,7 @@ export default class Breadcrumb extends Vue {
     const first = matched[0]
     if (first && first.name !== 'dashboard') {
       matched = [
-        { path: '/dashboard', meta: { title: 'Dashboard' } } as RouteRecord
+        { path: '/dashboard', meta: { title: '菜单' } } as RouteRecord
       ].concat(matched)
     }
     this.breadcrumbs = matched.filter(item => {

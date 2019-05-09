@@ -34,7 +34,7 @@ export default [
           import(
             /* webpackChunkName: "console" */ '@/views/site/sitePermission/index.vue'
           ),
-        meta: { title: '功能权限', icon: 'tree' }
+        meta: { title: '功能权限', icon: 'nested' }
       }
     ]
   }
