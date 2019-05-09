@@ -10,6 +10,8 @@ NProgress.configure({ showSpinner: false })
 
 const whiteList = ['/login']
 
+let isFirstEnter = true
+
 router.beforeEach(async(to: Route, from: Route, next: any) => {
   NProgress.start()
   if (UserModule.userData.token) {
@@ -20,7 +22,11 @@ router.beforeEach(async(to: Route, from: Route, next: any) => {
       const hasRoles = UserModule.userData.roles && UserModule.userData.roles.length > 0
       console.log(hasRoles)
       if (hasRoles) {
-        addRoutes(UserModule.userData.roles)
+        console.log(from)
+        if (isFirstEnter) {
+          isFirstEnter = false
+          addRoutes(UserModule.userData.roles)
+        }
         next()
       } else {
         await UserModule.ResetToken()
