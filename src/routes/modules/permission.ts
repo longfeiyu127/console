@@ -16,16 +16,25 @@ export default [
     component: Layout,
     redirect: '/permission/role',
     name: 'Permission',
-    meta: { title: '权限', icon: 'lock' },
+    meta: { title: '权限管理', icon: 'lock' },
     children: [
       {
         path: 'role',
         name: 'RolePermission',
         component: () =>
           import(
-            /* webpackChunkName: "console" */ '@/views/permission/role.vue'
+            /* webpackChunkName: "permission" */ '@/views/permission/role.vue'
           ),
-        meta: { title: '权限管理', icon: 'lock' }
+        meta: { title: '角色管理', icon: 'role' }
+      },
+      {
+        path: 'user',
+        name: 'UserPermission',
+        component: () =>
+          import(
+            /* webpackChunkName: "permission" */ '@/views/permission/user.vue'
+          ),
+        meta: { title: '用户管理', icon: 'user' }
       }
     ]
   }

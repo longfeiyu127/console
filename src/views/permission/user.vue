@@ -1,19 +1,17 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">增加角色</el-button>
-
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <!-- <el-table-column align="center" label="角色代号" width="220">
+      <el-table-column align="center" label="姓名" width="220">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
-      </el-table-column> -->
-      <el-table-column align="center" label="角色" width="220">
+      </el-table-column>
+      <el-table-column align="center" label="公司" width="220">
         <template slot-scope="scope">
           {{ scope.row.extra }}
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="详情">
+      <el-table-column align="header-center" label="角色">
         <template slot-scope="scope">
           {{ scope.row.description }}
         </template>
@@ -148,15 +146,7 @@ export default class Role extends Vue {
     })
     return data
   }
-  private handleAddRole() {
-    this.role = Object.assign({}, defaultRole)
-    if (this.$refs.tree) {
-      // @ts-ignore
-      this.$refs.tree.setCheckedNodes([])
-    }
-    this.dialogType = 'new'
-    this.dialogVisible = true
-  }
+
   private handleEdit(scope: any) {
     this.dialogType = 'edit'
     this.dialogVisible = true
