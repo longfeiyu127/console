@@ -28,7 +28,10 @@ const persistUser = {
     sessionStorage.setItem('persistUser', JSON.stringify(data))
   },
   getUser(): UserData {
-    return JSON.parse(sessionStorage.getItem('persistUser') || 'null') || this.getDefaultUser()
+    return (
+      JSON.parse(sessionStorage.getItem('persistUser') || 'null') ||
+      this.getDefaultUser()
+    )
   },
   getDefaultUser(): UserData {
     return {
@@ -46,7 +49,8 @@ const persistUser = {
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
   public userData = persistUser.getUser()
-  public avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+  public avatar =
+    'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
 
   @Action({ commit: 'SET_USER_DATA' })
   public async FedLogOut() {
@@ -61,7 +65,11 @@ class User extends VuexModule implements IUserState {
   }
 
   @Action({ commit: 'SET_USER_DATA' })
-  public async Login(userInfo: { username: string; password: string, userType: string }) {
+  public async Login(userInfo: {
+    username: string
+    password: string
+    userType: string
+  }) {
     const data = await $http.user.login(userInfo)
     console.log(data)
     const { resCode, resData } = data
