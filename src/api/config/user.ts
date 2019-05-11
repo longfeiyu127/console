@@ -1,11 +1,11 @@
 export default {
   login: {
     method: 'POST',
-    url: '/olsc/user/login'
+    url: '/olsc/user/access/login'
   },
   logout: {
     method: 'POST',
-    url: '/olsc/user/logout'
+    url: '/olsc/user/access/logout'
   },
   signup: {
     method: 'POST',

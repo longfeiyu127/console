@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "在线服务控制台",
+  "short_name": "招商仁和人寿APP控制台",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",

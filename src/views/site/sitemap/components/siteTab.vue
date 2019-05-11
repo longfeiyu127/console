@@ -114,7 +114,7 @@ export default class SiteTab extends Vue {
   private async getList() {
     this.loading = true
     this.$emit('create') // for test
-    const res = await $http.site.sitemap({type: this.type})
+    const res = await $http.site.sitemap({ type: this.type })
     console.log(res)
     this.list = res.resData
     this.loading = false

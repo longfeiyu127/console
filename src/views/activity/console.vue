@@ -71,6 +71,16 @@ interface excelOption {
   bookType?: string | undefined
 }
 
+/*
+  multiHeader = [],
+  header,
+  data,
+  filename,
+  merges = [],
+  autoWidth = true,
+  bookType=  'xlsx'
+*/
+
 export enum ActivityStatus {
   NotStarted,
   Started,
@@ -208,6 +218,7 @@ export default class Console extends Vue {
       import('@/vendor/Export2Excel.js').then(excel => {
         // console.log(excel)
         Export2Excel = excel
+        // @ts-ignore
         excel.export_json_to_excel(opotions)
       })
     }
