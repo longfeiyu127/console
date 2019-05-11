@@ -3,23 +3,23 @@
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
       <el-table-column align="center" label="姓名" width="220">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.realname }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="公司" width="220">
         <template slot-scope="scope">
-          {{ scope.row.extra }}
+          {{ scope.row.company }}
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="角色">
+      <el-table-column align="center" label="角色">
         <template slot-scope="scope">
-          {{ scope.row.description }}
+          {{ scope.row.roles.map(item => item.name).join('/') }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope" v-if="scope.row.name !== 'admin'">
-          <el-button type="primary" size="small" @click="handleEdit(scope)">编辑权限</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope)">删除</el-button>
+          <el-button type="primary" size="small" @click="handleEdit(scope)" v-permission="['admin']">编辑权限</el-button>
+          <el-button type="danger" size="small" @click="handleDelete(scope)" v-permission="['editor']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -43,10 +43,10 @@
       </el-form>
       <div style="text-align:right;">
         <el-button type="danger" @click="dialogVisible=false">
-          {{ 'permission.cancel' }}
+          {{ '取消' }}
         </el-button>
         <el-button type="primary" @click="confirmRole">
-          {{ 'permission.confirm' }}
+          {{ '确定' }}
         </el-button>
       </div>
     </el-dialog>
@@ -57,6 +57,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import path from 'path'
 import { deepClone } from '@/utils'
+import permission from '@/directive/permission/permission.ts'
 import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
 import $http from '@/api'
 
@@ -67,7 +68,11 @@ const defaultRole = {
   routes: []
 }
 
-@Component
+@Component({
+  directives: {
+    permission
+  }
+})
 export default class Role extends Vue {
   private role: any = Object.assign({}, defaultRole)
   private routes = []
@@ -87,7 +92,7 @@ export default class Role extends Vue {
 
   private created() {
     this.getRoutes()
-    this.getRoles()
+    this.getUsers()
   }
 
   private async getRoutes() {
@@ -97,10 +102,10 @@ export default class Role extends Vue {
     // this.routes = this.i18n(routes)
   }
 
-  private async getRoles() {
+  private async getUsers() {
     // const res = await getRoles()
     // this.rolesList = res.data
-    const res = await $http.role.getRole()
+    const res = await $http.user.getUsers()
     console.log(res, res.resCode)
     if (res.resCode) return
     this.rolesList = res.resData.list.reverse()

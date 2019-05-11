@@ -8,7 +8,7 @@ import { PermissionModule } from '@/store/modules/permission'
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login']
+const whiteList = ['/login', '/permission/user']
 
 let isFirstEnter = true
 

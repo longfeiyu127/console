@@ -25,6 +25,7 @@ Vue.use(Router)
  * all roles can be accessed
  */
 export const constantRoutes = [
+  ...Permission,
   {
     path: '/login',
     component: () =>
@@ -176,7 +177,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  ...Permission,
+  // ...Permission,
   ...Activity,
   ...Site,
   {
