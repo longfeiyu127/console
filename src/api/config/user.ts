@@ -9,5 +9,9 @@ export default {
   },
   getUsers: {
     url: '/olsc/user'
+  },
+  updateUser: {
+    method: 'POST',
+    url: '/olsc/user/update'
   }
 }

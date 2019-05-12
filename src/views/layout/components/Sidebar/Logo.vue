@@ -5,11 +5,11 @@
         class="sidebar-logo-link" to="/">
         <img v-if="logo" src="@/assets/logo.png"
           class="sidebar-logo">
-        <h1 v-else class="sidebar-title">{{ title }}</h1>
+        <!-- <h1 v-else class="sidebar-title">{{ title }}</h1> -->
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link"
         to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <img src="@/assets/logo.png" class="sidebar-logo">
         <h1 class="sidebar-title">{{ title }}</h1>
       </router-link>
     </transition>
@@ -23,6 +23,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
 export default class SidebarLogo extends Vue {
   @Prop({ required: true }) private collapse!: boolean
 
+  private logo = true
   private title = '在线服务控制台'
 }
 </script>

@@ -1,55 +1,58 @@
 <template>
   <div class="app-container">
-    <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="姓名" width="220">
+    <el-table v-loading="listLoading" :data="userList"
+      border fit highlight-current-row style="width: 100%">
+      <el-table-column align="center" label="姓名"
+        width="80">
         <template slot-scope="scope">
-          {{ scope.row.realname }}
+          <span>{{ scope.row.realname }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="公司" width="220">
+
+      <el-table-column width="120px" align="center"
+        label="公司">
         <template slot-scope="scope">
-          {{ scope.row.company }}
+          <span>{{ scope.row.company }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色">
-        <template slot-scope="scope">
-          {{ scope.row.roles.map(item => item.name).join('/') }}
+
+      <el-table-column min-width="100px" label="角色">
+        <template slot-scope="{row}">
+          <template v-if="row.edit">
+            <!-- <el-input v-model="row.editObj.roles[0]"
+              class="edit-input" size="small" /> -->
+            <el-checkbox-group class="edit-input"
+              v-model="row.editObj.roles" :min="1">
+              <el-checkbox v-for="role in roleList"
+                :label="role.name" :key="role.key"></el-checkbox>
+            </el-checkbox-group>
+          </template>
+          <span v-else>{{ row.roles.join(' ') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
-        <template slot-scope="scope" v-if="scope.row.name !== 'admin'">
-          <el-button type="primary" size="small" @click="handleEdit(scope)" v-permission="['admin']">编辑权限</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope)" v-permission="['editor']">删除</el-button>
+
+      <el-table-column align="center" label="操作"
+        min-width="50px">
+        <template slot-scope="{row}">
+          <template v-if="row.edit">
+            <el-button type="success" size="small"
+              icon="el-icon-circle-check-outline"
+              @click="confirmEdit(row)">
+              确定
+            </el-button>
+            <el-button class="cancel-btn" size="small"
+              icon="el-icon-refresh" type="warning"
+              @click="cancelEdit(row)">
+              取消
+            </el-button>
+          </template>
+          <el-button v-else type="primary" size="small"
+            icon="el-icon-edit" @click="row.edit=!row.edit">
+            修改
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'Edit Role':'New Role'">
-      <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="Name">
-          <el-input v-model="role.name" placeholder="角色" />
-        </el-form-item>
-        <el-form-item label="Desc">
-          <el-input
-            v-model="role.description"
-            :autosize="{minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Role Description"
-          />
-        </el-form-item>
-        <el-form-item label="Menus">
-          <el-tree ref="tree" :check-strictly="checkStrictly" :data="routesData" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
-        </el-form-item>
-      </el-form>
-      <div style="text-align:right;">
-        <el-button type="danger" @click="dialogVisible=false">
-          {{ '取消' }}
-        </el-button>
-        <el-button type="primary" @click="confirmRole">
-          {{ '确定' }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -57,15 +60,25 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import path from 'path'
 import { deepClone } from '@/utils'
-import permission from '@/directive/permission/permission.ts'
-import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
 import $http from '@/api'
+import { PermissionModule } from '@/store/modules/permission'
+import permission from '@/directive/permission/permission.ts'
 
-const defaultRole = {
-  key: '',
-  name: '',
-  description: '',
-  routes: []
+const defaultUser = {
+  username: '',
+  roles: [],
+  realname: '',
+  company: ''
+}
+
+interface User {
+  username: String
+  roles: any[]
+  realname: string
+  company?: string
+  createdAt?: string
+  edit?: boolean
+  editObj?: User
 }
 
 @Component({
@@ -74,192 +87,71 @@ const defaultRole = {
   }
 })
 export default class Role extends Vue {
-  private role: any = Object.assign({}, defaultRole)
-  private routes = []
-  private rolesList: any[] = []
-  private dialogVisible = false
-  private dialogType = 'new'
-  private serviceRoutes: any = []
-  private checkStrictly = false
-  private defaultProps = {
-    children: 'children',
-    label: 'title'
+  private listLoading: boolean = true
+  private userList: any[] = []
+
+  get roleList() {
+    return PermissionModule.roleList
   }
 
-  get routesData() {
-    return this.routes
-  }
-
-  private created() {
-    this.getRoutes()
+  private async created() {
     this.getUsers()
-  }
-
-  private async getRoutes() {
-    const res = await getRoutes()
-    this.serviceRoutes = res.data
-    const routes = this.generateRoutes(res.data)
-    // this.routes = this.i18n(routes)
+    await PermissionModule.getRoleList()
+    this.listLoading = false
   }
 
   private async getUsers() {
-    // const res = await getRoles()
-    // this.rolesList = res.data
+    this.listLoading = true
     const res = await $http.user.getUsers()
+    this.listLoading = false
     console.log(res, res.resCode)
-    if (res.resCode) return
-    this.rolesList = res.resData.list.reverse()
-  }
-
-  private generateRoutes(routes: any, basePath = '/') {
-    const res = []
-
-    for (let route of routes) {
-      // skip some route
-      if (route.hidden) { continue }
-
-      const onlyOneShowingChild = this.onlyOneShowingChild(route.children, route)
-
-      if (route.children && onlyOneShowingChild && !route.alwaysShow) {
-        route = onlyOneShowingChild
-      }
-
-      const data: any = {
-        path: path.resolve(basePath, route.path),
-        title: route.meta && route.meta.title
-      }
-
-      // recursive child routes
-      if (route.children) {
-        data.children = this.generateRoutes(route.children, data.path)
-      }
-      res.push(data)
-    }
-    return res
-  }
-
-  private generateArr(routes: any) {
-    let data: any[] = []
-    routes.forEach((route: any) => {
-      data.push(route)
-      if (route.children) {
-        const temp = this.generateArr(route.children)
-        if (temp.length > 0) {
-          data = [...data, ...temp]
-        }
-      }
-    })
-    return data
-  }
-
-  private handleEdit(scope: any) {
-    this.dialogType = 'edit'
-    this.dialogVisible = true
-    this.checkStrictly = true
-    this.role = deepClone(scope.row)
-    this.$nextTick(() => {
-      const routes = this.generateRoutes(this.role.routes)
-      // @ts-ignore
-      this.$refs.tree.setCheckedNodes(this.generateArr(routes))
-      // set checked state of a node not affects its father and child nodes
-      this.checkStrictly = false
+    if (res.resCode !== 0) return
+    this.userList = res.resData.list.reverse().map((v: any) => {
+      v.editObj = deepClone(v)
+      this.$set(v, 'edit', false)
+      return v
     })
   }
-  private handleDelete({ $index, row }: any) {
-    this.$confirm('Confirm to remove the role?', 'Warning', {
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
+
+  private cancelEdit(row: any) {
+    // @ts-ignore
+    const { realname, company, roles } = deepClone(row)
+    row.editObj = { realname, company, roles }
+    row.edit = false
+    this.$message({
+      message: 'The user has been restored to the original value',
       type: 'warning'
     })
-      .then(async() => {
-        await deleteRole(row.key)
-        this.rolesList.splice($index, 1)
-        this.$message({
-          type: 'success',
-          message: 'Delete succed!'
-        })
-      })
-      .catch(err => { console.error(err) })
   }
-  private generateTree(routes: any, basePath = '/', checkedKeys: any) {
-    const res: any|any[] = []
-
-    for (const route of routes) {
-      const routePath = path.resolve(basePath, route.path)
-
-      // recursive child routes
-      if (route.children) {
-        route.children = this.generateTree(route.children, routePath, checkedKeys)
-      }
-
-      if (checkedKeys.includes(routePath) || (route.children && route.children.length >= 1)) {
-        res.push(route)
-      }
-    }
-    return res
-  }
-  private async confirmRole() {
-    const isEdit = this.dialogType === 'edit'
+  private async confirmEdit(row: any) {
+    row.edit = false
     // @ts-ignore
-    const checkedKeys: any = this.$refs.tree.getCheckedKeys()
-    this.role.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
-
-    if (isEdit) {
-      await updateRole(this.role.key, this.role)
-      for (let index = 0; index < this.rolesList.length; index++) {
-        if (this.rolesList[index].key === this.role.key) {
-          this.rolesList.splice(index, 1, Object.assign({}, this.role))
-          break
-        }
-      }
-    } else {
-      const { data } = await addRole(this.role)
-      this.role.key = data.key
-      this.rolesList.push(this.role)
-    }
-
-    const { description, key, name } = this.role
-    this.dialogVisible = false
-    this.$notify({
-      title: 'Success',
-      dangerouslyUseHTMLString: true,
-      message: `
-          <div>Role Key: ${key}</div>
-          <div>Role Nmae: ${name}</div>
-          <div>Description: ${description}</div>
-        `,
+    const { realname, company, roles } = deepClone(row.editObj)
+    const res = await $http.user.updateUser({
+      id: row.id,
+      realname,
+      company,
+      roles
+    })
+    if (res.resCode !== 0) return
+    row.realname = realname
+    row.company = company
+    row.roles = roles
+    this.$message({
+      message: 'The user has been edited',
       type: 'success'
     })
-  }
-  private onlyOneShowingChild(children = [], parent: any) {
-    let onlyOneChild: any = null
-    const showingChildren = children.filter((item: any) => !item.hidden)
-
-    // When there is only one child route, the child route is displayed by default
-    if (showingChildren.length === 1) {
-      onlyOneChild = showingChildren[0]
-      onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
-      return onlyOneChild
-    }
-
-    // Show parent if there are no child route to display
-    if (showingChildren.length === 0) {
-      onlyOneChild = { ...parent, path: '', noShowingChildren: true }
-      return onlyOneChild
-    }
-
-    return false
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.app-container {
-  .roles-table {
-    margin-top: 30px;
-  }
-  .permission-tree {
-    margin-bottom: 30px;
-  }
+<style scoped>
+.edit-input {
+  padding-right: 100px;
 }
+/* .cancel-btn {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+} */
 </style>

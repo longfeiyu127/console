@@ -7,6 +7,7 @@ import {
   getModule
 } from 'vuex-module-decorators'
 import store from '@/store'
+import $http from '@/api'
 
 const hasPermission = (roles: any, route: any) => {
   if (route.meta && route.meta.roles) {
@@ -33,12 +34,14 @@ export const filterAsyncRoutes = (routes: any, roles: any) => {
 }
 
 export interface IPermissionState {
-  routes: Array<any>,
+  roleList: Array<any>
+  routes: Array<any>
   addRoutes: Array<any>
 }
 
 @Module({ dynamic: true, store, name: 'permission' })
 class App extends VuexModule implements IPermissionState {
+  public roleList: any = []
   public routes: any = []
   public addRoutes = []
 
@@ -58,10 +61,25 @@ class App extends VuexModule implements IPermissionState {
     })
   }
 
+  @Action({ commit: 'SET_ROLELIST' })
+  public async getRoleList() {
+    const res = await $http.role.getRole()
+    console.log(res, res.resCode)
+    if (res.resCode) {
+      return []
+    } else {
+      return res.resData.list.reverse()
+    }
+  }
+
   @Mutation
   private SET_ROUTES(routes: any) {
     this.addRoutes = routes
     this.routes = constantRoutes.concat(routes)
+  }
+  @Mutation
+  private SET_ROLELIST(roleList: any) {
+    this.roleList = roleList
   }
 }
 
